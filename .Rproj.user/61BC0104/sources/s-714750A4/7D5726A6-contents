@@ -1,0 +1,17 @@
+---
+title: My 1st blog post
+author: Olga Ostrovskaya
+date: '2019-12-06'
+slug: my-1st-blog-post
+categories: []
+tags: []
+description: ''
+---
+
+## Here's my first blog post!
+Some text
+
+```{r}
+plot(faithful$eruptions, faithful$waiting)
+```
+

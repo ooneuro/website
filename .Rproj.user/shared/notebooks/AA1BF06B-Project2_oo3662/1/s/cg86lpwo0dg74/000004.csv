@@ -1,0 +1,4 @@
+"0",""
+"0","prob <- predict(fit5, type = ""response"")"
+"0",""
+"0","class_diag(prob, den$sym)"

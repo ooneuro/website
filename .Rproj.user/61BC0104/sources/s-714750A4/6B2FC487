@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1575658672861.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3620013730",
+    "id" : "6B2FC487",
+    "lastKnownWriteTime" : 1575658902,
+    "last_content_update" : 1575658903004,
+    "path" : "~/CLASSES/_SDS 348 Bioinformatics/Project3/content/Resume.Rmd",
+    "project_path" : "content/Resume.Rmd",
+    "properties" : {
+        "cursorPosition" : "13,1",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

@@ -1,0 +1,14 @@
+---
+title: "Projects"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Projects
+
+[Project 1. Exploratory Data Analysis](/Project1_oo3662_full)
+
+[Project 2. Statistical Modeling](/Project2_oo3662_full)

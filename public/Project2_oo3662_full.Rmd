@@ -1,0 +1,436 @@
+---
+title: 'Project 2: Modeling, Testing, and Predicting, SDS348 Fall 2019.'
+author: "Olga Ostrovskaya, oo3662"
+date: ''
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,fig.align="center",warning=FALSE,message=FALSE,fig.width=8, fig.height=5, linewidth=60)
+options(tibble.width = 100,width = 100)
+#library(tidyverse)
+#Libraries
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(MASS))
+suppressPackageStartupMessages(library(lmtest))
+suppressPackageStartupMessages(library(sandwich))
+suppressPackageStartupMessages(library(plotROC))
+suppressPackageStartupMessages(library(glmnet))
+
+
+```
+
+# Modeling
+## Guidelines and Rubrc
+
+- **0. (5 pts)** Introduce your dataset and each of your variables (or just your main variables if you have lots) in a paragraph.
+
+*The dataset from our lab contains the information about 49 dendrite segments, such as the length of the segment (ZLen in micron), Average synaptic flat area (CFA) formed by excitatory synapses on each dendrite, total summed postsynaptic density area (PSD), both in micron squared. Also there's the info about the number of protrusions (Prots) each dendrite has and the number of specific subtypes of protrusions (sp, filo, stubby, sh). There are 2 categorical variables: Condition (experimental) has 3 levels - Perfused, Control, and TBS; sym - is binary, where 0 denotes that this dendrite does NOT have any inhibitory synapses on it and 1 - the dendrite has at least one inhibitory synapse. Overall, 33 segments do not have inhibitory synapses (sym = 0) and 16 - have them (sym =1).*  
+
+```{r}
+setwd("C:/Users/olgao/Documents/CLASSES/_SDS 348 Bioinformatics/R files/")
+#getwd()
+den <- read.csv("DENmaster1114a.csv")
+
+####Tidying####
+den <- den %>% mutate(umprot = Prots/ZLen)
+den<-den %>% mutate(logCFA = log(CFA),logPSD = log(PSD), logZ = log(ZLen))
+den <- den %>% mutate(outcome = ifelse(sym == 0, "inhibitory_no", "inhibitory_yes"))
+#View(den)
+#glimpse(den)
+
+
+```
+
+
+- **1. (15 pts)** Perform a MANOVA testing whether any of your numeric variables (or a subset of them, if including them all doesn't make sense) show a mean difference across levels of one of your categorical variables (3). If they do, perform univariate ANOVAs to find response(s) showing a mean difference across groups (3), and perform post-hoc t tests to find which groups differ (3). Discuss the number of tests you have performed, calculate the probability of at least one type I error (if unadjusted), and adjust the significance level accordingly (bonferroni correction) before discussing significant differences (3). Briefly discuss assumptions and whether or not they are likely to have been met (2).
+
+```{r}
+#Assumptions of normality & plots
+
+#ZLen vs CFA (log Zlen vs log CFA - not much difference)
+den %>% ggplot(aes(ZLen, CFA))+geom_point(aes(color=Condition), size=3)+
+  facet_wrap(~outcome, scales = "free")+
+  theme(strip.background = element_rect(fill="orange")) +
+  theme(strip.text.x = element_text(size = 16, face = "bold")) +
+  theme(axis.title = element_text(size = 14))+
+  labs(x = "Z Length", y = "Average CFA Area")
+
+den %>% ggplot(aes(logZ, logCFA))+geom_point(aes(color=Condition), size=3)+
+  facet_wrap(~outcome, scales = "free")+
+  theme(strip.background = element_rect(fill="orange")) +
+  theme(strip.text.x = element_text(size = 16, face = "bold")) +
+  theme(axis.title = element_text(size = 14))+
+  labs(x = "log Z Length", y = "log Average CFA Area")
+  #theme(legend.position = c(0.4,0.8))+
+
+#ZLen vs PSD 
+den %>% ggplot(aes(ZLen, PSD))+geom_point(aes(color=Condition), size=3)+
+  facet_wrap(~outcome, scales = "free")+
+  theme(strip.background = element_rect(fill="orange")) +
+  theme(strip.text.x = element_text(size = 16, face = "bold")) +
+  theme(axis.title = element_text(size = 14))+
+  labs(x = "Z Length", y = "Summed PSD Area")
+
+
+den %>% ggplot(aes(Condition, CFA))+geom_boxplot()+facet_wrap(~outcome, scales = "free")
+
+den %>% ggplot(aes(ZLen))+geom_histogram(color = "white")+facet_wrap(~sym, scales = "free")
+den %>% ggplot(aes(logZ))+geom_histogram(color = "white")+facet_wrap(~sym, scales = "free")
+
+den %>% ggplot(aes(CFA))+geom_histogram(color = "white")+facet_wrap(~sym, scales = "free")
+den %>% ggplot(aes(logCFA))+geom_histogram(color = "white")+facet_wrap(~sym, scales = "free")
+
+#den %>% ggplot(aes(PSD))+geom_histogram(color = "white")+facet_wrap(~sym, scales = "free")
+#den %>% ggplot(aes(logPSD))+geom_histogram(color = "white")+facet_wrap(~sym, scales = "free")
+
+
+```
+
+*Assumptions. This is the data from a scientific lab, and we follow a rigorous protocol to make it random/independent, in reality they are semi-independent. We can see that while for the cohort not containing inhibitory synapses (faceted by 0 and 1) the normality is not too bad, the log transform makes it better, and it is necessary for the case sym = 1 (containing inhibitory synapses, there are only 16 of them). So that I did the log transform. The variance for the control and TBS seems to be similar but perfused is apparently different - as seen from the boxplot (w/o faceting by sym). When faceted by the sym, there's definitely a problem with Control with inhibitory synapses but it's what we've got. The good news, there's not so many of the outliers. There will be more tests for the assumptions below, and those are good.*
+*For the MANOVA I decided to subset only the dendrites w/o inhibitory synapses (sym = 0), and made a separate table bc as stated above, the data are skewed.*
+
+```{r}
+den_nosym <- den %>% filter(sym == 0)
+
+#MANOVA - significant!
+manCFA <- manova(cbind(logCFA, logZ)~Condition,data = den_nosym)
+summary(manCFA)
+
+# 2 ANOVAs
+summary.aov(manCFA)
+
+# 1 Post-hocs with 3 t-tests.
+pairwise.t.test(den$ZLen, den$Condition, p.adj="none") #3 t-tests
+
+#Probability of the type-I error for 6 tests total
+1-0.95^6   # P=0.265!
+0.05/6     #alphaadj = 0.0083
+
+
+```
+
+*A one-way multivariate analysis of variance (MANOVA) was conducted to determine the effect of the experimental Condition (Perfused, Control, and TBS) on two dependent variables (synaptic flat area CFA and dendritic segment length ZLen).Significant differences were found among the three conditions on the two dependent measures, Pillai trace = .67, pseudo F(2, 30) = 7.49, p < 0.0001. Univariate analyses of variance (ANOVAs) for each dependent variable were conducted as follow-up tests to the MANOVA,using the Bonferroni method for controlling Type I error rates for multiple comparisons. The univariate ANOVA for ZLen was significant, F(2, 30) = 18.16, p < 0.0001. Post hoc analysis was performed conducting pairwise comparisons to determine which Condition differed in ZLen. The difference was between Perfused group and both Control and TBS after adjusting for multiple comparisons (bonferroni). Bonferroni adjustment resulted into a significance level of p=0.008, nevertheless it did not change the conclusions.ZLen differs significantly between Perfused and Control groups and Perfused and TBS groups.*
+
+
+- **2. (10 pts)** Perform some kind of randomization test on your data (that makes sense). This can be anything you want! State null and alternative hypotheses, perform the test, and interpret the results (7). Create a plot visualizing the null distribution and the test statistic (3).
+
+```{r}
+denPSD <- den %>% dplyr::select(outcome, logPSD)
+#View(denPSD)
+#Independent samples t-test
+#t.test(data=denPSD, logPSD~outcome)
+t.test(data=denPSD, logPSD~outcome, var.eq=T)
+
+denPSD%>%group_by(outcome)%>%
+  summarize(means=mean(logPSD))%>%summarize(`mean_diff:`=diff(means))
+
+# Randomization 
+set.seed(348)
+rand_dist<-vector()
+for(i in 1:5000){
+new<-data.frame(outcome=sample(denPSD$outcome), logPSD=denPSD$logPSD)
+rand_dist[i]<-mean(new[new$outcome=="inhibitory_yes",]$logPSD)-
+mean(new[new$outcome=="inhibitory_no",]$logPSD)}
+{hist(rand_dist,main="",ylab=""); abline(v = -0.543,col="red");abline(v = quantile(rand_dist,.025),col="blue")}
+
+mean(rand_dist>0.543)*2 #pvalue
+
+
+```
+
+*H0: there's no difference between the means of log summed postsynaptic density (logPSD) of the dendritic segments that contain and don't contain inhibitory synapses. HA: there's a difference between the means of log summed postsynaptic density (logPSD) of the dendritic segments that contain and don't contain inhibitory synapses. The results: Normal t-test (equal variances): t = 2.2285, df = 47, p-value = 0.03067, significant (Welch ttest: t = 1.9201, df = 21.202, p-value = 0.0684, and it's not significant, the code is commented above). The randomization test shows p-value 0.0344, which is significant, and very similar to the one that is reported by standard t-test, which rather confirms the significance (as opposed to Welch test). I did this task after everything else, so I got curious why LASSO identified PSD as an important variable, and this test goes in line with LASSO.*
+
+
+- **3. (35 pts)** Build a linear regression model predicting one of your response variables from at least 2 other variables, including their interaction. Mean-center any numeric variables involved in the interaction.
+
+    - Interpret the coefficient estimates (do not discuss significance) (10)
+    - Plot the regression using `ggplot()`. If your interaction is numeric by numeric, refer to code near the end of WS15 to make the plot. If you have 3 or more predictors, just chose two to plot for convenience. (7)
+    - Check assumptions of linearity, normality, and homoskedasticity either graphically or using a hypothesis test (3)
+    - Regardless, recompute regression results with robust standard errors via `coeftest(..., vcov=vcovHC(...))`. Discuss significance of results, including any changes from before/after robust SEs if applicable. (7)
+    - What proportion of the variation in the outcome does your model explain? (3)
+    - Finally, rerun the regression but without interactions (just main effects); compare this with the interaction model and the null model using a likelihood ratio test (4)
+
+```{r}
+# Because the normality was not too bad for sym=0 group I then worked with ZLen w/o log transform.
+den_nosym$cZLen <- den_nosym$ZLen - mean(den_nosym$ZLen)
+#View(den_nosym)
+fit3 <- lm(logCFA ~ Condition*cZLen, data = den_nosym)
+summary(fit3)
+
+# plot regression
+den_nosym %>% ggplot(aes(ZLen, logCFA, color=Condition))+ 
+  geom_point(size=3)+geom_smooth(method="lm")+
+  theme(legend.position = c(0.1,0.8))
+
+# linearity and homoskedasticity (normality was assessed in Q1).
+resids<-fit3$residuals; fitvals<-fit3$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col="red")
+bptest(fit3)
+ks.test(resids, "pnorm", sd=sd(resids))
+ggplot()+geom_histogram(aes(resids),bins=20)
+ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids))
+
+# regression results with robust standard errors
+coeftest(fit3)
+coeftest(fit3, vcov=vcovHC(fit3))
+
+```
+
+*I regressed log CFA value on the interaction of numeric var ZLen and categorical Condition. The equation is logCFA = -2.72 + 0.90Perfused - 0.38TBS + 0.02cZLen + 0.24Perfused:ZLen + 0.04TBS:ZLen. CFA is equal -2.72 for a dendrite in Control with an average ZLen. For Control, each increase in 1um of ZLen leads to an increase in 0.02 of log CFA, on average. For Perfused condition, with an average ZLen, log CFA increased 0.9 um comparing with Control. For TBS dendrite with an average ZLen, log CFA decreased 0.38 um, comparing with Control.There's a difference of (0.24 log um square/per1um) in slope of ZLen on log CFA for Perfused vs Control (the effect of ZLen on CFA is different for Perfused vs Control). For Perfused, the slope on log CFA is 0.24 more than for Control. There's a difference of (0.04 log um square/per1um) in slope of ZLen on log CFA for TBS vs Control (the effect of ZLen on CFA is different for TBS vs Control). For TBS, the slope on log CFA is 0.24 more than for Control. Assumptions: except for 2 outliers, linearity, homoskedasticity and normality of the residuals looks good. Other requirements were discussed above in Q1. Before the robust SEs application, the effect of ZLen on log CFA was significantly different between TBS and Control, and the slopes of Perfused vs Control was different on log CFA, which is seen on the graph. After the correction, only the main effect of TBS is significant. Our model explains 21.77% of the variation in log flat area (logCFA).*
+
+```{r}
+### Same as previous chunk but includes all of the dendrites (n=49).
+####################################################################
+# Because the normality was not too bad for sym=0 group I then worked with ZLen w/o log transform.
+den$cZLen <- den$ZLen - mean(den$ZLen)
+#View(den)
+fit3all <- lm(logCFA ~ Condition*cZLen, data = den)
+summary(fit3all)
+
+# plot regression
+den %>% ggplot(aes(ZLen, logCFA, color=Condition))+ 
+  geom_point(size=3)+geom_smooth(method="lm")
+  #theme(legend.position = c(0.1,0.8))
+
+# linearity and homoskedasticity (normality was assessed in Q1).
+resids<-fit3all$residuals; fitvals<-fit3all$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col="red")
+bptest(fit3all)
+ks.test(resids, "pnorm", sd=sd(resids))
+ggplot()+geom_histogram(aes(resids),bins=20)
+ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids))
+
+# regression results with robust standard errors
+coeftest(fit3all)
+coeftest(fit3, vcov=vcovHC(fit3all))
+
+
+```
+
+
+
+- **4. (5 pts)** Rerun same regression model (with interaction), but this time compute bootstrapped standard errors. Discuss any changes you observe in SEs and p-values using these SEs compared to the original SEs and the robust SEs)
+
+```{r}
+######## 4. Bootstrapped SE
+summary(fit3)
+set.seed(1234)
+# repeat 5000 times, saving the coefficients each time
+samp_distn<-replicate(5000, {
+  boot_dat<-den_nosym[sample(nrow(den_nosym),replace=TRUE),]
+  fit4 <- lm(logCFA ~ Condition*cZLen, data = boot_dat)
+  coef(fit4)
+})
+## Estimated SEs
+#View(samp_distn)
+out <- do.call(rbind,lapply(samp_distn,unlist)) %>% as.data.frame 
+out %>% summarize_all(sd, na.rm = T)
+## Empirical 95% CI
+out %>% gather %>% group_by(key)%>%
+summarize(lower=quantile(value,.025, na.rm = T), upper=quantile(value,.975, na.rm = T), na.rm = T)
+
+```
+*Bootstrapped SEs are off, mostly for Perfused Condition and interaction, because we have a small sample size and Perfused condition also has most variability between the data points. In general, SEs by bootstrap are larger (except cZLen and TBS), then for most of variables, t will get smaller (t=b/SE), and significance should become less, p value will increase.*
+
+
+- **5. (40 pts)** Perform a logistic regression predicting a binary categorical variable (if you don't have one, make/get one) from at least two explanatory variables (interaction not necessary). 
+
+    - Interpret coefficient estimates in context (10)
+    - Report a confusion matrix for your logistic regression (2)
+    - Compute and discuss the Accuracy, Sensitivity (TPR), Specificity (TNR), and Recall (PPV) of your model (5)
+    - Using ggplot, plot density of log-odds (logit) by your binary outcome variable (3)
+    - Generate an ROC curve (plot) and calculate AUC (either manually or with a package); interpret (10)
+    - Perform 10-fold (or repeated random sub-sampling) CV and report average out-of-sample Accuracy, Sensitivity, and Recall (10)
+
+
+```{r}
+############## 5. Logistic Regression
+####don't touch
+class_diag<-function(probs,truth){
+  
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+  
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+  
+  data.frame(acc,sens,spec,ppv,auc)
+}
+######end don't touch
+
+### 
+#View(den)
+fit5<-glm(sym~Condition+ZLen+Prots+sp+filo+stubby+CFA+PSD, data=den, family="binomial")
+summary(fit5)
+exp(coef(fit5))
+den$phh<-predict(fit5,type="response")
+ggplot(den, aes(CFA,phh))+geom_point(aes(color=as.factor(sym)),alpha=.7,size=5)+
+  geom_rug(aes(color=as.factor(sym)),sides="right")
+
+prob <- predict(fit5, type = "response")
+
+class_diag(prob, den$sym)
+table(predict=as.numeric(prob>.5),truth=den$sym)%>%addmargins
+#####
+# density of log-odds (logit) plot
+
+den$logit<-predict(fit5) #get predicted log-odds
+den %>% ggplot(aes(logit, fill=outcome))+geom_density(alpha=.3)+
+  geom_vline(xintercept=0,lty=2)
+
+#ROC plot
+
+data <-den
+data$y <- data$sym
+data$prob <- data$phh
+sens<-function(p,data=data, y=y) mean(data[data$y==1,]$prob>p)
+spec<-function(p,data=data, y=y) mean(data[data$y==0,]$prob<p)
+sensitivity<-sapply(seq(0,1,.01),sens,data)
+specificity<-sapply(seq(0,1,.01),spec,data)
+ROC1<-data.frame(sensitivity,specificity,cutoff=seq(0,1,.01))
+#ROC1%>%gather(key,rate,-cutoff)%>%ggplot(aes(cutoff,rate,color=key))+geom_path()+
+# geom_vline(xintercept=c(.1,.5),lty=2,color="gray50")
+ROC1$TPR<-sensitivity
+ROC1$FPR<-1-specificity
+ROC1%>%ggplot(aes(FPR,TPR))+geom_path(size=1.5)+geom_segment(aes(x=0,y=0,xend=1,yend=1),lty=2)+
+  scale_x_continuous(limits = c(0,1))
+
+den1 <- data
+#####
+auc(den1$y,prob)
+# 10-fold (or repeated random sub-sampling) CV
+
+set.seed(1234)
+k=5 #choose number of folds
+data1<-den1[sample(nrow(den1)),] #randomly order rows
+folds<-cut(seq(1:nrow(den1)),breaks=k,labels=F) #create folds
+diags<-NULL
+for(i in 1:k){
+  ## Create training and test sets
+  train<-data1[folds!=i,]
+  test<-data1[folds==i,]
+  truth<-test$y
+  ## Train model on training set
+  fit<-glm(sym~Condition+ZLen+Prots+sp+filo+stubby+CFA+PSD, data=train, family="binomial")
+  probs<-predict(fit,newdata = test,type="response")
+  ## Test model on test set (save all k results)
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+apply(diags,2,mean) #average across all k results
+
+
+```
+
+*1. I built a model that predicts if a dendrite has inhibitory synapse (sym = 1) or does not have (sym = 0) from CFA, PSD areas, Condition, length - ZLen, total number of protrusions - Prots, and number of protrusion subtypes: spines, filopodium, stubby. The coefficients (exponentiated) indicate that the odds for the dendrite to have an inhibitory synapse is 19.6 times higher for Perfused vs Control dendrites (multiplication). These odds are 10.1 times higher if condition is TBS. For each 1 um increase in ZLen the odds are multiplied by 0.746 (decrease, in fact) for Control dendrites. For the 1um square increase in average flat area CFA leads to 16.9+05 multiplication in odds! For the same increase in summed area (PSD), the odds decrease by 6.18-03 times. Total protrusion number with addition of each one by one, increases the odds by 1.3 times; spine number - by 1.15, stubby - by 1.61. Increase in filopodium number leads to a decrease in odds - multiplication by 0.51. Intercept (exponentiated) - 0.026 - is the odds (of having an inhibitory synapse) of the dendritic segment in Control condition with the zero length and no protrusions and no excitatory synapses (so, CFA and PSD are both zero).*
+*2. This model has excellent AUC 0.9, Accuracy 0.86, modest Sensitivity (TPR) 0.75, Specificity (TNR) 0.91, and good Recall (PPV) of 0.8. Accuracy is 42 cases correct out of 49 (86%). Sensitivity is ok 0.75 meaning it captures 75% of positives (12 out of 16 contain inhibitory synapses), the rest is labeled as negatives (4) - this fair. Very high level of TNR (Specificity) - 91% (30 out of 33 correct predictions of having no inhibitory synapses). Recall/Precision is marginally good - 80% of cases are classified correctly (12 out of 15 predicted as having inhibitory synapses).* 
+*3. ROC plot confirms an excellent AUC of 0.9. which corresponds to the area under the curve, if it's 1 then it's ideal - 100% true predictions. Average out-of-sample Accuracy, Sensitivity, and Recall were somewhat lower with acc 0.75, quite low sens 0.67, spec 0.81, recall 0.70, and AUC still modest 0.79. These results point to a possible overfit by the model.*
+
+
+- **6. (10 pts)** Choose one variable you want to predict (can be one you used from before; either binary or continuous) and run a LASSO regression inputting all the rest of your variables as predictors. Choose lambda to give the simplest model whose accuracy is near that of the best (i.e., `lambda.1se`). Discuss which variables are retained. Perform 10-fold CV using this model: if response in binary, compare model's out-of-sample accuracy to that of your logistic regression in part 5; if response is numeric, compare the residual standard error (at the bottom of the summary output, aka RMSE): lower is better fit!
+
+```{r}
+####################  6. LASSO
+#
+fit5<-glm(sym~Condition+ZLen+Prots+sp+filo+stubby+CFA+PSD, data=den, family="binomial")
+den$phh<-predict(fit5,type="response")
+#ggplot(den, aes(CFA,phh))+geom_point(aes(color=as.factor(sym)),alpha=.7,size=5)+
+# geom_rug(aes(color=as.factor(sym)),sides="right")
+prob <- predict(fit5, type = "response")
+
+y<-as.matrix(den$sym)
+x <- model.matrix(fit5) 
+x <-x[,-1] 
+x <- scale(x)
+cv<-cv.glmnet(x,y, family="binomial")
+lasso <- glmnet(x,y,lambda = cv$lambda.1se, family="binomial")
+coef(lasso)
+
+# Create a new table for running only lasso-var glm
+den2 <- den %>% mutate(Perfused = Condition) %>% dplyr::select(-Condition)
+den2$Perfused <- ifelse(den2$Perfused == "Perfused", 1,0)
+den2$y <- den2$sym
+den2$prob <- den2$phh
+#View(den2)
+
+# Re-fit glm with only lasso-variables
+fit6 <- glm(sym~Perfused+PSD, data=den2, family = "binomial")
+prob6 <- predict(fit6, type = "response")
+# Classification Diagnostics
+class_diag(prob6, den2$sym)
+table(predict=as.numeric(prob6>.5),truth=den2$sym)%>%addmargins
+
+# 5-fold CV
+set.seed(1234)
+k=5 #choose number of folds
+data2<-den2[sample(nrow(den2)),] #randomly order rows
+folds<-cut(seq(1:nrow(den2)),breaks=k,labels=F) #create folds
+diags<-NULL
+for(i in 1:k){
+  ## Create training and test sets
+  train<-data2[folds!=i,]
+  test<-data2[folds==i,]
+  truth<-test$y
+  ## Train model on training set
+  fit <- glm(sym~Perfused+PSD, data=train, family = "binomial")
+  probs<-predict(fit,newdata = test,type="response")
+  ## Test model on test set (save all k results)
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+apply(diags,2,mean) #average across all k results
+
+####
+
+
+```
+
+*After LASSO (+1SD) only Condition-Perfused and (surprise) PSD variables left. Re-fitting with those only and 5-fold CV gives similar numbers, so the fit seems valid. Out of sample AUC is 0.82 - not a huge drop from 0.9 when we fitted all variables. Accuracy is also 82% (similar to 86% in the full model). Sensitivity is now 69% - a further drop from 75%, which is slightly below fair treshold (but still better than a chance). Specificity is 88% vs 91% - not much change. Last, Precision (Recall) PPV dropped to 73% from 80% - fair.*
+
+
+```{R eval=F}
+#data(package = .packages(all.available = TRUE))
+```
+
+...
+
+
+
+
+

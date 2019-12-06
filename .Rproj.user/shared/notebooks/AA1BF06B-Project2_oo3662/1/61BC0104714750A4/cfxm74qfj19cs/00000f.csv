@@ -1,0 +1,4 @@
+"0",""
+"0","# linearity and homoskedasticity (normality was assessed in Q1)."
+"0","resids<-fit3$residuals; fitvals<-fit3$fitted.values"
+"0","ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col=""red"")"

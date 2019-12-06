@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Olga Ostrovskaya" />
+    <meta name="description" content="I&#39;m a neuroscientist with a love to statistics and data science!">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Project 1: Exploratory Data Analysis</title>
+    <meta name="generator" content="Hugo 0.60.1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project1_oo3662_full/">Project 1: Exploratory Data Analysis</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="data-wrangling-and-data-exploration" class="section level2">
+<h2>Data Wrangling and Data Exploration</h2>
+<div id="part-1.-general-description-of-the-project-datasets-and-workflow." class="section level3">
+<h3>Part 1. General description of the project, datasets, and workflow.</h3>
+<ul>
+<li><p>My Project 1 goal is to analyze housing data in Austin, Dallas and Houston. I’m focusing mostly on the prices. I split my data analysis into 3 research questions, utilizing the requested functions and visualizations. Summarizing statistics is calculated and used as needed. I’m commenting some code lines that I used for convenience or to doublecheck the output.</p></li>
+<li><ol style="list-style-type: decimal">
+<li><p>The first table is “aus” - contains monthly data for Austin from Jan 2011 to Aug 2019. Overall, it has 104 observations and 7 variables. The source is Real Estate Center of Texas A&amp;M University (<a href="https://www.recenter.tamu.edu/" class="uri">https://www.recenter.tamu.edu/</a>).</p></li>
+<li><p>The second table is included in R - “txhousing”, it contains monthly data from many Texas cities 2000 - 2015, with 8602 observations and 9 variables. This is demonstrated in the code chunk below.</p></li>
+<li><p>The third table “full” will be loaded and used to demonstrate wrangling (pivoting) but it will NOT be used for the analysis in this project.</p></li>
+</ol></li>
+<li><p>The workflow. First I’m reading both tables in the <em>Part 1</em>, then separately tidy them up in the <em>Part 2</em>. After that I work with the table “aus” for RQ1 in <em>Part 3</em>. <em>Part 4 and 5</em> describe joining the datasets and creating statistical tables. <em>Part 6</em> addresses RQ 2 by further data wrangling in the joined dataset which is followed by PCA analysis (RQ 3) in the <em>Part 7</em>.</p></li>
+</ul>
+<pre class="r"><code>setwd(&quot;C:/Users/olgao/Documents/CLASSES/_SDS 348 Bioinformatics/R files&quot;)
+getwd()</code></pre>
+<pre><code>## [1] &quot;C:/Users/olgao/Documents/CLASSES/_SDS 348 Bioinformatics/R files&quot;</code></pre>
+<pre class="r"><code>suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(ggplot2))
+
+#library(dplyr)
+#library(tidyverse)
+#library(ggplot2)
+      
+aus &lt;-read.csv(&quot;Austin.csv&quot;)
+glimpse(aus)</code></pre>
+<pre><code>## Observations: 104
+## Variables: 7
+## $ Date      &lt;fct&gt; 11-Jan, 11-Feb, 11-Mar, 11-Apr, 11-May, 11-Jun, 11-Jul, 1...
+## $ sales     &lt;int&gt; 475, 517, 750, 845, 914, 1063, 998, 948, 763, 663, 627, 7...
+## $ volume    &lt;int&gt; 122264199, 135652356, 193946860, 248055567, 276520183, 30...
+## $ Price_ave &lt;int&gt; 257398, 262384, 258596, 293557, 302538, 290512, 285522, 2...
+## $ Price_med &lt;int&gt; 199900, 205000, 203860, 215000, 229500, 225000, 225000, 2...
+## $ listings  &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ inventory &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...</code></pre>
+<pre class="r"><code>#View(aus)
+#full &lt;- read.csv(&quot;dataMSA_full.csv&quot;)
+#View(full)
+#full %&gt;% glimpse()
+
+txhousing %&gt;% glimpse()</code></pre>
+<pre><code>## Observations: 8,602
+## Variables: 9
+## $ city      &lt;chr&gt; &quot;Abilene&quot;, &quot;Abilene&quot;, &quot;Abilene&quot;, &quot;Abilene&quot;, &quot;Abilene&quot;, &quot;A...
+## $ year      &lt;int&gt; 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 200...
+## $ month     &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, ...
+## $ sales     &lt;dbl&gt; 72, 98, 130, 98, 141, 156, 152, 131, 104, 101, 100, 92, 7...
+## $ volume    &lt;dbl&gt; 5380000, 6505000, 9285000, 9730000, 10590000, 13910000, 1...
+## $ median    &lt;dbl&gt; 71400, 58700, 58100, 68600, 67300, 66900, 73500, 75000, 6...
+## $ listings  &lt;dbl&gt; 701, 746, 784, 785, 794, 780, 742, 765, 771, 764, 721, 65...
+## $ inventory &lt;dbl&gt; 6.3, 6.6, 6.8, 6.9, 6.8, 6.6, 6.2, 6.4, 6.5, 6.6, 6.2, 5....
+## $ date      &lt;dbl&gt; 2000.000, 2000.083, 2000.167, 2000.250, 2000.333, 2000.41...</code></pre>
+<pre class="r"><code>#View(txhousing)
+
+full &lt;- read.csv(&quot;dataMSA_full.csv&quot;)</code></pre>
+</div>
+<div id="part-2.-tidying-datasets-aus-and-txhousing-for-joining.-wrangling-of-the-full-table." class="section level3">
+<h3>Part 2. Tidying datasets “aus” and “txhousing” for joining. Wrangling of the “full” table.</h3>
+<ul>
+<li><p>“aus” table has Date column with the data in the format “Jan-11”. Functions <em>separate</em>, <em>mutate</em>, and <em>unite</em> were used for splitting the Date in 2 columns in numeric format (<em>as.numeric</em>) similar to that in the “txhousing” dataset. The data were rearranged with <em>arrange</em> and <em>select</em>. Additionally, a descriptive column ‘city’ filled with “Austin-1” for each row was added to separate from Austin data in “txhousing” after joining because direct comparisons of the tidy tables have shown differences in the data (will be shown in the graph in Fig 3). The final “aus1” table has 104 observations and 9 variables.</p></li>
+<li><p>“txhousing” table was <em>filter</em>-ed (with <em>greple</em>) for Austin, Dallas and Houston data. The resultant “txh” table has 561 observations and 8 variables. Each city had equal number of 187 observations.</p></li>
+<li><p>“full” table will undergo extensive pivoting_long to collapse into several neat long columns. It will be done in 3 steps: creating 2 “long” subsets and then joining them. I will not work on this table further in this project.</p></li>
+</ul>
+<pre class="r"><code>######### &quot;aus&quot; table
+View(aus)
+
+
+aus1 &lt;- aus %&gt;% separate(Date, into = c(&quot;year&quot;,&quot;month&quot;)) %&gt;% 
+  rename(median_aus = Price_med)%&gt;% mutate(city = &quot;Austin_1&quot;, y = 20) %&gt;%
+  unite(year, y, year, sep = &quot;&quot;, remove = T) %&gt;%
+  mutate(month = case_when(month == &quot;Jan&quot; ~ 1,
+                           month == &quot;Feb&quot; ~ 2,
+                           month == &quot;Mar&quot; ~ 3,
+                           month == &quot;Apr&quot; ~ 4,
+                           month == &quot;May&quot; ~ 5,
+                           month == &quot;Jun&quot; ~ 6,
+                           month == &quot;Jul&quot; ~ 7,
+                           month == &quot;Aug&quot; ~ 8,
+                           month == &quot;Sep&quot; ~ 9,
+                           month == &quot;Oct&quot; ~ 10,
+                           month == &quot;Nov&quot; ~ 11,
+                           month == &quot;Dec&quot; ~ 12 )) %&gt;% 
+  arrange(city, year, month) %&gt;% 
+  select(city, year, month, everything()) 
+
+aus1$year = as.numeric(as.character(aus1$year))
+aus1$month = as.numeric(as.character(aus1$month))
+
+glimpse(aus1)</code></pre>
+<pre><code>## Observations: 104
+## Variables: 9
+## $ city       &lt;chr&gt; &quot;Austin_1&quot;, &quot;Austin_1&quot;, &quot;Austin_1&quot;, &quot;Austin_1&quot;, &quot;Austin_...
+## $ year       &lt;dbl&gt; 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 20...
+## $ month      &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6,...
+## $ sales      &lt;int&gt; 475, 517, 750, 845, 914, 1063, 998, 948, 763, 663, 627, ...
+## $ volume     &lt;int&gt; 122264199, 135652356, 193946860, 248055567, 276520183, 3...
+## $ Price_ave  &lt;int&gt; 257398, 262384, 258596, 293557, 302538, 290512, 285522, ...
+## $ median_aus &lt;int&gt; 199900, 205000, 203860, 215000, 229500, 225000, 225000, ...
+## $ listings   &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ inventory  &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...</code></pre>
+<pre class="r"><code>aus1 %&gt;% count(year)</code></pre>
+<pre><code>## # A tibble: 9 x 2
+##    year     n
+##   &lt;dbl&gt; &lt;int&gt;
+## 1  2011    12
+## 2  2012    12
+## 3  2013    12
+## 4  2014    12
+## 5  2015    12
+## 6  2016    12
+## 7  2017    12
+## 8  2018    12
+## 9  2019     8</code></pre>
+<pre class="r"><code>#View(aus1)
+######### Tidying &quot;txhousing&quot;
+
+txh &lt;- txhousing %&gt;% filter(grepl(&quot;Austin|Dallas|Houston&quot;,city)) %&gt;% select(-date)
+txh %&gt;% count(city)</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   city        n
+##   &lt;chr&gt;   &lt;int&gt;
+## 1 Austin    187
+## 2 Dallas    187
+## 3 Houston   187</code></pre>
+<pre class="r"><code>glimpse(txh)</code></pre>
+<pre><code>## Observations: 561
+## Variables: 8
+## $ city      &lt;chr&gt; &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin...
+## $ year      &lt;int&gt; 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 200...
+## $ month     &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, ...
+## $ sales     &lt;dbl&gt; 1025, 1277, 1603, 1556, 1980, 1885, 1818, 1880, 1498, 152...
+## $ volume    &lt;dbl&gt; 173053635, 226038438, 298557656, 289197960, 393073774, 36...
+## $ median    &lt;dbl&gt; 133700, 134000, 136700, 136900, 144700, 148800, 149300, 1...
+## $ listings  &lt;dbl&gt; 3084, 2989, 3042, 3192, 3617, 3799, 3944, 3948, 4058, 410...
+## $ inventory &lt;dbl&gt; 2.0, 2.0, 2.0, 2.1, 2.3, 2.4, 2.6, 2.6, 2.6, 2.6, 2.7, 2....</code></pre>
+<pre class="r"><code>#View(txh) 
+
+######### &quot;full&quot; table
+#cleaning, leaving only 3 cities, renaming the cols for compliance
+full1 &lt;-full %&gt;% 
+  mutate(Area = case_when(Area == &quot;Austin-Round Rock&quot; ~ &quot;Austin&quot;,
+                          Area == &quot;Dallas-Fort Worth-Arlington&quot;  ~ &quot;Dallas&quot;,
+                          Area == &quot;Dallas-Plano-Irving&quot;  ~ &quot;Remove&quot;,
+                          Area == &quot;Fort Worth-Arlington&quot; ~ &quot;Remove&quot;,
+                          Area == &quot;Houston-The Woodlands-Sugar Land&quot;  ~ &quot;Houston&quot;)) %&gt;%
+  filter(grepl(&quot;Austin|Dallas|Houston&quot;, Area)) %&gt;%
+  rename(city = Area, year = Year, quarter = Quarter) %&gt;%
+  select(city, everything())
+
+full1 %&gt;% head(10)</code></pre>
+<pre><code>##      city year quarter Overall_hpi Overall_YoY  Low_hpi    Low_YoY  Mid_hpi
+## 1  Austin 1999       1    100.0000          NA 100.0000         NA 100.0000
+## 2  Austin 1999       2    103.5377          NA 104.5302         NA 102.8261
+## 3  Austin 1999       3    105.7443          NA 104.8712         NA 106.3154
+## 4  Austin 1999       4    106.9488          NA 106.4548         NA 106.7034
+## 5  Austin 2000       1    110.6621  0.10662131 109.1286 0.09128591 110.5901
+## 6  Austin 2000       2    116.5525  0.12570138 114.8542 0.09876533 116.4510
+## 7  Austin 2000       3    121.0196  0.14445490 118.7616 0.13245227 119.6322
+## 8  Austin 2000       4    123.3932  0.15375938 123.4919 0.16004131 122.0188
+## 9  Austin 2001       1    125.9586  0.13822692 126.3661 0.15795560 125.9358
+## 10 Austin 2001       2    127.5043  0.09396403 130.2084 0.13368436 126.5778
+##       Mid_YoY High_hpi   High_YoY
+## 1          NA 100.0000         NA
+## 2          NA 103.1996         NA
+## 3          NA 106.2000         NA
+## 4          NA 107.6061         NA
+## 5  0.10590093 111.8856 0.11885556
+## 6  0.13250428 118.1883 0.14523947
+## 7  0.12525757 124.0778 0.16834069
+## 8  0.14353243 124.5053 0.15704713
+## 9  0.13876180 125.2493 0.11944136
+## 10 0.08696228 125.3678 0.06074634</code></pre>
+<pre class="r"><code>#pivoting and joining &quot;full1&quot; table
+full_hpi &lt;- full1 %&gt;% group_by(city, year, quarter) %&gt;% 
+  pivot_longer(contains(&quot;hpi&quot;), values_to = &quot;hpi&quot;) %&gt;%
+  separate(name, into = c(&quot;type&quot;, &quot;x&quot;)) %&gt;%
+  select(city, year, quarter, hpi, type) %&gt;%
+  ungroup() #%&gt;% head()
+
+full_yoy &lt;- full1 %&gt;% group_by(city, year, quarter) %&gt;%
+  pivot_longer(contains(&quot;YoY&quot;), values_to = &quot;yoy&quot;) %&gt;%
+  separate(name, into = c(&quot;type&quot;, &quot;y&quot;)) %&gt;%
+  select(city, year, quarter, yoy, type) %&gt;%
+  ungroup() #%&gt;% head()
+          
+full1_long &lt;- full_hpi %&gt;% full_join(full_yoy, by = c(&quot;city&quot;, &quot;year&quot;, &quot;quarter&quot;, &quot;type&quot;)) 
+full1_long %&gt;% head(10)</code></pre>
+<pre><code>## # A tibble: 10 x 6
+##    city    year quarter   hpi type      yoy
+##    &lt;chr&gt;  &lt;int&gt;   &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;
+##  1 Austin  1999       1  100  Overall    NA
+##  2 Austin  1999       1  100  Low        NA
+##  3 Austin  1999       1  100  Mid        NA
+##  4 Austin  1999       1  100  High       NA
+##  5 Austin  1999       2  104. Overall    NA
+##  6 Austin  1999       2  105. Low        NA
+##  7 Austin  1999       2  103. Mid        NA
+##  8 Austin  1999       2  103. High       NA
+##  9 Austin  1999       3  106. Overall    NA
+## 10 Austin  1999       3  105. Low        NA</code></pre>
+<pre class="r"><code>###############
+# full plot - hpi
+full1_long %&gt;% group_by(city, year) %&gt;% filter(type==&quot;Overall&quot;) %&gt;%
+  ggplot(aes(x=year, y=hpi, color = city))+
+  geom_point(stat=&quot;summary&quot;, fun.y = &quot;mean&quot;, size = 3)+
+  theme(legend.position = c(0.1,0.9))+
+  geom_errorbar(stat = &quot;summary&quot;, fun.data = &quot;mean_se&quot;,
+                size=0.5, width = 0.5)+
+  labs(title = &quot;Fig 6. hpi over Years&quot;)</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="/Project1_oo3662_full_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>full1_long %&gt;% group_by(city, year) %&gt;% filter(type==&quot;Overall&quot;) %&gt;%
+  ggplot(aes(x=year, y=yoy, fill = city))+
+  geom_bar(stat = &quot;summary&quot;, fun.y = &quot;mean&quot;)+
+  theme(legend.position = c(0.4,0.8))+
+  geom_errorbar(stat = &quot;summary&quot;, fun.data = &quot;mean_se&quot;,
+                size=0.5, width = 0.5, position = position_dodge(0.9))+
+  labs(title = &quot;Fig 7. yoy over Years&quot;) +
+  facet_wrap(~ city)+
+  theme(strip.background = element_rect(fill=&quot;orange&quot;)) +
+  theme(strip.text.x = element_text(size = 16, face = &quot;bold&quot;)) +
+  theme(axis.title = element_text(size = 14))</code></pre>
+<pre><code>## Warning: Removed 12 rows containing non-finite values (stat_summary).</code></pre>
+<pre><code>## Warning: Removed 12 rows containing non-finite values (stat_summary).</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="/Project1_oo3662_full_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<pre class="r"><code>  #scale_y_continuous(breaks=seq(0, 2000, 250)) +
+  #labs(x = &quot;Month&quot;, y = &quot;Average Distance&quot;) +
+  #theme(strip.background = element_rect(fill=&quot;orange&quot;)) +
+  #theme(legend.position = &quot;none&quot;) +
+  #theme(strip.text.x = element_text(size = 16, face = &quot;bold&quot;)) +
+  #theme(axis.title = element_text(size = 14))</code></pre>
+</div>
+<div id="part-3.-research-question-1.-which-months-are-the-most-expensive-and-cheap-for-buying-a-house-in-austin" class="section level3">
+<h3>Part 3. Research Question 1. Which months are the most “expensive” and “cheap” for buying a house in Austin?</h3>
+<p>To answer this question the table “aus” alone is sufficient. I summarized the data for the median price grouped by month and visualized as a bar graph (Fig 1) with <em>stat = “identity”</em>, deliberately using SD (as opposed to SE), in “aus2”. Fig 2 shows each year individually by faceting.
+The conclusion is that the cheapest month on average is Jan (followed by Feb), while the most expensive is June, followed by May. Interestingly, these averages show higher prices in Apr than in July.</p>
+<pre class="r"><code>aus2 &lt;- aus1 %&gt;% group_by(month) %&gt;% 
+  summarize(monthly_med = mean(median_aus, na.rm = T), monthly_sd = sd(median_aus), monthly_n=n()) %&gt;% arrange(monthly_med)
+View(aus2)
+
+ggplot(aus2, aes(month, monthly_med))+geom_bar(stat = &quot;identity&quot;, fill = &quot;red&quot;)+
+  geom_errorbar(aes(y=monthly_med, ymin = monthly_med-monthly_sd, 
+                                   ymax = monthly_med+monthly_sd)) +
+  scale_x_continuous(breaks=seq(1,12,1))+
+  labs(x = &quot;Month&quot;, y = &quot;Average Median Price ($)&quot;) +
+  theme(axis.title = element_text(size = 14)) +
+  ggtitle(&quot;Fig 1. Average median price per month of Austin housing, 2011-2019&quot;) </code></pre>
+<pre><code>## Warning: Ignoring unknown aesthetics: y</code></pre>
+<p><img src="/Project1_oo3662_full_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>aus1 %&gt;% group_by(year) %&gt;%  
+  ggplot(aes(month, median_aus))+
+  geom_line() +
+  geom_point(size = 3, color = &quot;red&quot;) + 
+  scale_x_continuous(breaks=seq(1,12,1))+
+  labs(x = &quot;Month&quot;, y = &quot;Average Median Price ($)&quot;) +
+  theme(axis.title = element_text(size = 14)) +
+  ggtitle(&quot;Fig 2. Monthly median price of Austin housing, 2011-2019&quot;) +
+  facet_wrap(~ year, scales = &quot;free_y&quot;)</code></pre>
+<p><img src="/Project1_oo3662_full_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+</div>
+<div id="part-4.-joining-the-datasets-aus-and-txh-into-a-single-dataset-txhaus." class="section level3">
+<h3>Part 4. Joining the datasets “aus” and “txh” into a single dataset “txhaus”.</h3>
+<p>Both tables have now mostly the same variables. Because they differ for Austin city in both tables, I earlier named the city “Austin_1” in the “aus” original table. This will add aus1 (tidy aus original table) to txh (tidy txhousing original table with only 3 cities) seamlessly as the 4th city by using <em>full_join</em>. Then I checked that there are no duplicates in the new table txhaus. Arithmetic comparison of the row count in the new joined table and two original tables shows that there is a clean addition, no rows dropped (could also be checked with an additional anti_join or inner_join by the # of observations). The new joined txaus table has 665 observations and 9 variables.</p>
+<pre class="r"><code>txhaus &lt;- txh %&gt;% full_join(aus1, by = c(&quot;city&quot;, &quot;year&quot;, &quot;month&quot;, &quot;median&quot; = &quot;median_aus&quot;, &quot;sales&quot;, &quot;volume&quot;, &quot;listings&quot;, &quot;inventory&quot;)) 
+#%&gt;% group_by(city) %&gt;% count(sort = T)
+glimpse(txhaus)</code></pre>
+<pre><code>## Observations: 665
+## Variables: 9
+## $ city      &lt;chr&gt; &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin...
+## $ year      &lt;dbl&gt; 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 200...
+## $ month     &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, ...
+## $ sales     &lt;dbl&gt; 1025, 1277, 1603, 1556, 1980, 1885, 1818, 1880, 1498, 152...
+## $ volume    &lt;dbl&gt; 173053635, 226038438, 298557656, 289197960, 393073774, 36...
+## $ median    &lt;dbl&gt; 133700, 134000, 136700, 136900, 144700, 148800, 149300, 1...
+## $ listings  &lt;dbl&gt; 3084, 2989, 3042, 3192, 3617, 3799, 3944, 3948, 4058, 410...
+## $ inventory &lt;dbl&gt; 2.0, 2.0, 2.0, 2.1, 2.3, 2.4, 2.6, 2.6, 2.6, 2.6, 2.7, 2....
+## $ Price_ave &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...</code></pre>
+<pre class="r"><code>#View(txhaus)
+sum(duplicated(txhaus))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>nrow(txhaus) - (nrow(aus)+nrow(txh))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>#txhaus %&gt;% anti_join(txh)</code></pre>
+</div>
+<div id="part-5.-creating-statistics-tables-for-different-purposes." class="section level3">
+<h3>Part 5. Creating statistics tables for different purposes.</h3>
+<ol style="list-style-type: decimal">
+<li><p>First, summary of overall statistics from a joined table “txhaus”.</p></li>
+<li><p>“txy” from the joined table “txhaus” - first, collapsing months into yearly stat and generating mean stat for median prices (mean, sd, se, n). The next step is cleaning which leaves only yearly stat for median prices, no other variables. This table is for visualizing RQ2.</p></li>
+<li><p>Creating summary statistics.</p></li>
+</ol>
+<pre class="r"><code># 1. summary statistics for each of the numeric variables overall
+txhaus %&gt;% summary()</code></pre>
+<pre><code>##      city                year          month            sales     
+##  Length:665         Min.   :2000   Min.   : 1.000   Min.   : 474  
+##  Class :character   1st Qu.:2004   1st Qu.: 3.000   1st Qu.:1675  
+##  Mode  :character   Median :2009   Median : 6.000   Median :3409  
+##                     Mean   :2008   Mean   : 6.397   Mean   :3516  
+##                     3rd Qu.:2013   3rd Qu.: 9.000   3rd Qu.:5048  
+##                     Max.   :2019   Max.   :12.000   Max.   :8945  
+##                                                                   
+##      volume              median          listings       inventory   
+##  Min.   :1.167e+08   Min.   :102500   Min.   : 1410   Min.   :1.00  
+##  1st Qu.:4.358e+08   1st Qu.:148400   1st Qu.: 9103   1st Qu.:3.10  
+##  Median :7.021e+08   Median :160300   Median :17632   Median :5.30  
+##  Mean   :7.774e+08   Mean   :184010   Mean   :18356   Mean   :4.79  
+##  3rd Qu.:1.023e+09   3rd Qu.:199900   3rd Qu.:27606   3rd Qu.:6.30  
+##  Max.   :2.568e+09   Max.   :393000   Max.   :43107   Max.   :8.10  
+##                                       NA&#39;s   :50      NA&#39;s   :50    
+##    Price_ave     
+##  Min.   :246195  
+##  1st Qu.:309679  
+##  Median :375842  
+##  Mean   :369179  
+##  3rd Qu.:419503  
+##  Max.   :487931  
+##  NA&#39;s   :561</code></pre>
+<pre class="r"><code># 2. making yearly summary of median prices and cleaning txy to have only the summary of median #prices (txy) and sale volumes (txyv) for RQ2
+txy &lt;- txhaus %&gt;% group_by(city, year) %&gt;% 
+  mutate(mmed = mean(median, na.rm = T), 
+         sdmed = sd(median, na.rm = T), 
+         nmed = n_distinct(median), semed = sdmed/sqrt(nmed)) %&gt;% 
+  select(city, year, mmed, sdmed, nmed, semed) %&gt;% filter(!duplicated(city)) %&gt;%
+  arrange(city) %&gt;% ungroup() #%&gt;% head(20)
+
+glimpse(txy)</code></pre>
+<pre><code>## Observations: 57
+## Variables: 6
+## $ city  &lt;chr&gt; &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;...
+## $ year  &lt;dbl&gt; 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2...
+## $ mmed  &lt;dbl&gt; 143925.0, 149991.7, 154191.7, 154058.3, 153250.0, 160891.7, 1...
+## $ sdmed &lt;dbl&gt; 6583.329, 4987.158, 3094.998, 4768.354, 4750.598, 6295.808, 4...
+## $ nmed  &lt;int&gt; 12, 12, 12, 11, 12, 12, 12, 12, 12, 11, 12, 11, 12, 12, 12, 7...
+## $ semed &lt;dbl&gt; 1900.4435, 1439.6684, 893.4491, 1437.7127, 1371.3795, 1817.44...</code></pre>
+<pre class="r"><code>#View(txy)
+
+# 3. making yearly mean statistics for all numeric variables for RQ3 (PCA analysis)
+txypca &lt;- txhaus %&gt;% group_by(city, year)%&gt;% 
+  summarize_at(c(&quot;sales&quot;,&quot;volume&quot;, &quot;median&quot;, &quot;listings&quot;, &quot;inventory&quot;), mean, na.rm=T) %&gt;% 
+  ungroup() %&gt;%  
+  filter(!is.na(listings))   
+
+glimpse(txypca)</code></pre>
+<pre><code>## Observations: 53
+## Variables: 7
+## $ city      &lt;chr&gt; &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin&quot;, &quot;Austin...
+## $ year      &lt;dbl&gt; 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 200...
+## $ sales     &lt;dbl&gt; 1551.750, 1532.667, 1559.667, 1649.417, 1880.583, 2242.08...
+## $ volume    &lt;dbl&gt; 296753327, 296378843, 307995615, 324918210, 373955377, 47...
+## $ median    &lt;dbl&gt; 143925.0, 149991.7, 154191.7, 154058.3, 153250.0, 160891....
+## $ listings  &lt;dbl&gt; 3657.667, 7163.583, 8830.917, 10340.000, 10393.917, 8964....
+## $ inventory &lt;dbl&gt; 2.375000, 4.666667, 5.650000, 6.600000, 5.891667, 4.34166...</code></pre>
+<pre class="r"><code>#View(txypca)</code></pre>
+</div>
+<div id="part-6.-research-question-2.-what-is-the-median-pricesales-dynamics-over-years-for-austin-dallas-and-houston-what-did-happen-with-the-housing-median-pricessale-volumes-in-these-cities-around-the-subrime-mortgage-crash-in-2008" class="section level3">
+<h3>Part 6. Research Question 2. What is the median price/sales dynamics over years for Austin, Dallas, and Houston? What did happen with the housing median prices/sale volumes in these cities around the subrime mortgage crash in 2008?</h3>
+<p>We will answer this question by visualizations. Austin and Austin_1 have overlapping years but a bit different numbers probably because of different definition of the areas. Also, I used different approaches to visualizing the statistics in Figs 3 and 4.</p>
+<ul>
+<li>Fig 3 demonstrates the median price over years. We can see that surprisingly, the market crash of 2008 did not lead to significant price drop in these 3 cities, however 2011-2019 led to an explosive growth in price.</li>
+</ul>
+<p>-Fig 4 shows that 2010 suffered the minimal sale volumes which recovered to the 2006 pre-crash maximums only after 2013.</p>
+<pre class="r"><code># Fig 3. Yearly median prices for the 3 cities
+ggplot(txy, aes(year, mmed, color = city))+geom_point(size = 3)+geom_line()+
+  geom_errorbar(aes(y=mmed, ymin = mmed-semed, ymax = mmed+semed)) +
+  scale_x_continuous(breaks=seq(2000,2019,2))+
+  labs(x = &quot;Year&quot;, y = &quot;Average Median Price ($)&quot;) +
+  theme(axis.title = element_text(size = 14)) +
+  theme(legend.position = c(0.1,0.8))+
+  ggtitle(&quot;Fig 3. Average Median Price per Year&quot;) </code></pre>
+<pre><code>## Warning: Ignoring unknown aesthetics: y</code></pre>
+<p><img src="/Project1_oo3662_full_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>### Fig 4. Yearly sales volume for the 3 cities
+txhaus %&gt;% group_by(city, year) %&gt;% 
+  ggplot(aes(x=year, y=sales, fill = city))+
+  geom_bar(stat=&quot;summary&quot;, fun.y = &quot;mean&quot;, color = &quot;black&quot;, size = 1)+
+  facet_wrap(~city)+
+theme(legend.position = c(0.6,0.78))+
+geom_errorbar(stat = &quot;summary&quot;, fun.data = &quot;mean_se&quot;,
+              size=0.5, width = 0.5, position=position_dodge(0.9))+
+            labs(title = &quot;Fig 4. Average Sales Volume over Years&quot;)</code></pre>
+<p><img src="/Project1_oo3662_full_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre class="r"><code>### Fig 4a. Yearly inventory for the 3 cities
+txhaus %&gt;% group_by(city, year) %&gt;% 
+  ggplot(aes(x=year, y=inventory, fill = city))+
+  geom_bar(stat=&quot;summary&quot;, fun.y = &quot;mean&quot;, color = &quot;black&quot;, size = 1)+
+  facet_wrap(~city)+
+theme(legend.position = c(0.6,0.78))+
+geom_errorbar(stat = &quot;summary&quot;, fun.data = &quot;mean_se&quot;,
+              size=0.5, width = 0.5, position=position_dodge(0.9))+
+            labs(title = &quot;Fig 4a. Average Inventory over Years&quot;)</code></pre>
+<pre><code>## Warning: Removed 50 rows containing non-finite values (stat_summary).</code></pre>
+<pre><code>## Warning: Removed 50 rows containing non-finite values (stat_summary).</code></pre>
+<p><img src="/Project1_oo3662_full_files/figure-html/unnamed-chunk-6-3.png" width="672" /></p>
+</div>
+<div id="part-7.-research-question-3.-what-is-the-relationship-between-different-variables-that-describe-the-housing-market-in-austin-dallas-and-houston" class="section level3">
+<h3>Part 7. Research Question 3. What is the relationship between different variables that describe the housing market in Austin, Dallas, and Houston?</h3>
+<p>To address this question I performed PCA analysis.</p>
+<ol style="list-style-type: decimal">
+<li><p>In this case PC1 and PC2 are enough (cum prop 0.87, SD &gt;1). The plot of cumulative proportions is elbowing after the third component which contributes slightly less than 10% proportion.</p></li>
+<li><p>The strongest component (overall strength) PC1 is driven by year and median prices (and opposed by the other vars mostly characterizing the housing supply). PC2 is driven by the inverse correlation between inventory and the rest of the factors.</p></li>
+<li><p>The results plot shows that Austin is the strongest city on PC1 axis (has the strongest median price growth over years) while Houston growth (and somewhat less Dallas) is apparently driven by the higher inventory vs year (PC2). Higher inventory for Houston and Dallas is supported by the data (graphs are not shown here).</p></li>
+<li><p>Year seems to be the most important variable. Probably because of the population growth? Need to explore this by adding population variable.</p></li>
+</ol>
+<pre class="r"><code># creating pca table (normalizing and scaling the variables) and summary of PCs and their coefficients. 
+txypca1 &lt;- txypca %&gt;% select(-city) %&gt;% scale()
+rownames(txypca1)&lt;-txypca$city
+View(txypca1)
+pca&lt;-princomp(txypca1)
+names(pca)</code></pre>
+<pre><code>## [1] &quot;sdev&quot;     &quot;loadings&quot; &quot;center&quot;   &quot;scale&quot;    &quot;n.obs&quot;    &quot;scores&quot;   &quot;call&quot;</code></pre>
+<pre class="r"><code>summary(pca, loadings=T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2     Comp.3    Comp.4      Comp.5
+## Standard deviation     1.8102420 1.3666585 0.75636817 0.3594470 0.183384774
+## Proportion of Variance 0.5566658 0.3172789 0.09718243 0.0219478 0.005712784
+## Cumulative Proportion  0.5566658 0.8739447 0.97112717 0.9930750 0.998787764
+##                             Comp.6
+## Standard deviation     0.084475935
+## Proportion of Variance 0.001212236
+## Cumulative Proportion  1.000000000
+## 
+## Loadings:
+##           Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6
+## year       0.308  0.510  0.519  0.436  0.417  0.109
+## sales     -0.436  0.421 -0.195 -0.111         0.762
+## volume    -0.278  0.610 -0.168  0.235 -0.439 -0.523
+## median     0.471  0.275  0.321 -0.607 -0.473       
+## listings  -0.505  0.120  0.353 -0.548  0.447 -0.326
+## inventory -0.401 -0.318  0.661  0.272 -0.457  0.136</code></pre>
+<pre class="r"><code>eigval&lt;-pca$sdev^2 #square to convert SDs to eigenvalues
+varprop=round(eigval/sum(eigval),2) #proportion of var explained by each PC
+
+# The plot of cumulative proportions
+ggplot()+geom_bar(aes(y=varprop,x=1:6),stat=&quot;identity&quot;)+xlab(&quot;&quot;)+
+  geom_path(aes(y=varprop,x=1:6))+
+  geom_text(aes(x=1:6,y=varprop,label=round(varprop,2)),vjust=1,col=&quot;white&quot;,size=5)+
+  scale_y_continuous(breaks=seq(0,.6,.2),labels = scales::percent)+
+  scale_x_continuous(breaks=1:10)</code></pre>
+<p><img src="/Project1_oo3662_full_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>round(cumsum(eigval)/sum(eigval),2)</code></pre>
+<pre><code>## Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 
+##   0.56   0.87   0.97   0.99   1.00   1.00</code></pre>
+<pre class="r"><code>eigval #eigenvalues</code></pre>
+<pre><code>##      Comp.1      Comp.2      Comp.3      Comp.4      Comp.5      Comp.6 
+## 3.276975994 1.867755328 0.572092801 0.129202171 0.033629975 0.007136184</code></pre>
+<pre class="r"><code>summary(pca, loadings=T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2     Comp.3    Comp.4      Comp.5
+## Standard deviation     1.8102420 1.3666585 0.75636817 0.3594470 0.183384774
+## Proportion of Variance 0.5566658 0.3172789 0.09718243 0.0219478 0.005712784
+## Cumulative Proportion  0.5566658 0.8739447 0.97112717 0.9930750 0.998787764
+##                             Comp.6
+## Standard deviation     0.084475935
+## Proportion of Variance 0.001212236
+## Cumulative Proportion  1.000000000
+## 
+## Loadings:
+##           Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6
+## year       0.308  0.510  0.519  0.436  0.417  0.109
+## sales     -0.436  0.421 -0.195 -0.111         0.762
+## volume    -0.278  0.610 -0.168  0.235 -0.439 -0.523
+## median     0.471  0.275  0.321 -0.607 -0.473       
+## listings  -0.505  0.120  0.353 -0.548  0.447 -0.326
+## inventory -0.401 -0.318  0.661  0.272 -0.457  0.136</code></pre>
+<pre class="r"><code>eigen(cor(txypca1))</code></pre>
+<pre><code>## eigen() decomposition
+## $values
+## [1] 3.339994763 1.903673700 0.583094586 0.131686828 0.034276706 0.007273418
+## 
+## $vectors
+##            [,1]       [,2]       [,3]       [,4]        [,5]        [,6]
+## [1,]  0.3084652 -0.5095292 -0.5187008  0.4359304 -0.41738314 -0.10924613
+## [2,] -0.4358977 -0.4209165  0.1951624 -0.1112482  0.03252468 -0.76243043
+## [3,] -0.2783154 -0.6102680  0.1679097  0.2349279  0.43899749  0.52345957
+## [4,]  0.4707064 -0.2746432 -0.3213256 -0.6066162  0.47273781 -0.09106149
+## [5,] -0.5053685 -0.1196045 -0.3528118 -0.5480412 -0.44663306  0.32556262
+## [6,] -0.4005261  0.3178807 -0.6610152  0.2721489  0.45722263 -0.13591166</code></pre>
+<pre class="r"><code># Plot of loadings on PC1 and PC2 axes 
+pca$loadings[1:6,1:2]%&gt;%as.data.frame%&gt;%rownames_to_column%&gt;%
+  ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+  geom_vline(aes(xintercept=0),lty=2)+ylab(&quot;PC2&quot;)+xlab(&quot;PC1&quot;)+
+  geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col=&quot;red&quot;)+
+  geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))</code></pre>
+<p><img src="/Project1_oo3662_full_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<pre class="r"><code>results&lt;-txypca%&gt;%as.data.frame%&gt;% #take original data
+  mutate(PC1=pca$scores[,1],PC2=pca$scores[,2],
+         PC3=pca$scores[,3],PC4=pca$scores[,4])
+#View(results)
+
+# The Results plot of year/city vs PC1, PC2
+results %&gt;% ggplot(aes(PC1,PC2,color=year, shape=city))+geom_point(size=4)</code></pre>
+<p><img src="/Project1_oo3662_full_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
+</div>
+</div>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

@@ -1,0 +1,3 @@
+"0","## Empirical 95% CI"
+"0","out %>% gather %>% group_by(key)%>%"
+"0","summarize(lower=quantile(value,.025, na.rm = T), upper=quantile(value,.975, na.rm = T), na.rm = T)"

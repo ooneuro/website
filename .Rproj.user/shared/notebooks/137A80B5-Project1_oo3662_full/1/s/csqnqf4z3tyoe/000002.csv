@@ -1,0 +1,57 @@
+"0","######### ""aus"" table"
+"0","View(aus)"
+"0",""
+"0",""
+"0","aus1 <- aus %>% separate(Date, into = c(""year"",""month"")) %>% "
+"0","  rename(median_aus = Price_med)%>% mutate(city = ""Austin_1"", y = 20) %>%"
+"0","  unite(year, y, year, sep = """", remove = T) %>%"
+"0","  mutate(month = case_when(month == ""Jan"" ~ 1,"
+"0","                           month == ""Feb"" ~ 2,"
+"0","                           month == ""Mar"" ~ 3,"
+"0","                           month == ""Apr"" ~ 4,"
+"0","                           month == ""May"" ~ 5,"
+"0","                           month == ""Jun"" ~ 6,"
+"0","                           month == ""Jul"" ~ 7,"
+"0","                           month == ""Aug"" ~ 8,"
+"0","                           month == ""Sep"" ~ 9,"
+"0","                           month == ""Oct"" ~ 10,"
+"0","                           month == ""Nov"" ~ 11,"
+"0","                           month == ""Dec"" ~ 12 )) %>% "
+"0","  arrange(city, year, month) %>% "
+"0","  select(city, year, month, everything()) "
+"0",""
+"0","aus1$year = as.numeric(as.character(aus1$year))"
+"0","aus1$month = as.numeric(as.character(aus1$month))"
+"0",""
+"0","glimpse(aus1)"
+"1","Observations: 104
+"
+"1","Variables: 9
+"
+"1","$ city       [3m[38;5;246m<chr>[39m[23m ""Austin_1"", ""Austin_1"", ""Austin_1"", ""Austin_1"", ""Austin_1"", ""Au...
+"
+"1",""
+"1","$ year       [3m[38;5;246m<dbl>[39m[23m 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 201...
+"
+"1",""
+"1","$ month      [3m[38;5;246m<dbl>[39m[23m 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, ...
+"
+"1",""
+"1","$ sales      [3m[38;5;246m<int>[39m[23m 475, 517, 750, 845, 914, 1063, 998, 948, 763, 663, 627, 740, 47...
+"
+"1",""
+"1","$ volume     [3m[38;5;246m<int>[39m[23m 122264199, 135652356, 193946860, 248055567, 276520183, 30881424...
+"
+"1",""
+"1","$ Price_ave  [3m[38;5;246m<int>[39m[23m 257398, 262384, 258596, 293557, 302538, 290512, 285522, 273947,...
+"
+"1",""
+"1","$ median_aus [3m[38;5;246m<int>[39m[23m 199900, 205000, 203860, 215000, 229500, 225000, 225000, 213025,...
+"
+"1",""
+"1","$ listings   [3m[38;5;246m<int>[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,...
+"
+"1",""
+"1","$ inventory  [3m[38;5;246m<int>[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,...
+"
+"0","aus1 %>% count(year)"

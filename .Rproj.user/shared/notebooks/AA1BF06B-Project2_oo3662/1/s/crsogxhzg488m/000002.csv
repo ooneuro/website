@@ -1,0 +1,3 @@
+"0","#Assumptions of normality & plots"
+"0","den %>% ggplot(aes(ZLen, logCFA))+geom_point(aes(color=Condition), size=3)+"
+"0","  facet_wrap(~sym, scales = ""free"")"

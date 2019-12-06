@@ -1,0 +1,5 @@
+"0","  #theme(legend.position = c(0.1,0.8))"
+"0",""
+"0","# linearity and homoskedasticity (normality was assessed in Q1)."
+"0","resids<-fit3all$residuals; fitvals<-fit3all$fitted.values"
+"0","ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col=""red"")"

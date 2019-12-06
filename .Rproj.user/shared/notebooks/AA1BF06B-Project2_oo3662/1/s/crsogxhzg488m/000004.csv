@@ -1,0 +1,2 @@
+"0",""
+"0","den %>% ggplot(aes(Condition, CFA))+geom_boxplot()+facet_wrap(~sym, scales = ""free"")"

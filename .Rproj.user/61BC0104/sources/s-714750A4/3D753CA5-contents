@@ -1,0 +1,340 @@
+---
+title: 'Project 1: Exploratory Data Analysis'
+author: "Olga Ostrovskaya, oo3662. SDS348 Fall 2019"
+date: "2019-10"
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data Wrangling and Data Exploration
+
+### Part 1. General description of the project, datasets, and workflow.
+- My Project 1 goal is to analyze housing data in Austin, Dallas and Houston. I'm focusing mostly on the prices. I split my data analysis into 3 research questions, utilizing the requested functions and visualizations. Summarizing statistics is calculated and used as needed. I'm commenting some code lines that I used for convenience or to doublecheck the output.
+
+- 
+  1. The first table is "aus" - contains monthly data for Austin from Jan 2011 to Aug 2019. Overall, it has 104 observations and 7 variables. The source is Real Estate Center of Texas A&M University (https://www.recenter.tamu.edu/).
+  
+  2. The second table is included in R - "txhousing", it contains monthly data from many Texas cities 2000 - 2015, with 8602 observations and 9 variables. This is demonstrated in the code chunk below. 
+  3. The third table "full" will be loaded and used to demonstrate wrangling (pivoting) but it will NOT be used for the analysis in this project.
+
+- The workflow. First I'm reading both tables in the *Part 1*, then separately tidy them up in the *Part 2*. After that I work with the table "aus" for RQ1 in *Part 3*. *Part 4 and 5* describe joining the datasets and creating statistical tables. *Part 6* addresses RQ 2 by further data wrangling in the joined dataset which is followed by PCA analysis (RQ 3) in the *Part 7*.
+
+
+```{r}
+setwd("C:/Users/olgao/Documents/CLASSES/_SDS 348 Bioinformatics/R files")
+getwd()
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(ggplot2))
+
+#library(dplyr)
+#library(tidyverse)
+#library(ggplot2)
+      
+aus <-read.csv("Austin.csv")
+glimpse(aus)
+#View(aus)
+#full <- read.csv("dataMSA_full.csv")
+#View(full)
+#full %>% glimpse()
+
+txhousing %>% glimpse()
+#View(txhousing)
+
+full <- read.csv("dataMSA_full.csv")
+```
+
+### Part 2. Tidying datasets "aus" and "txhousing" for joining. Wrangling of the "full" table.
+- "aus" table has Date column with the data in the format "Jan-11". Functions *separate*, *mutate*, and *unite* were used for splitting the Date in 2 columns in numeric format (*as.numeric*) similar to that in the "txhousing" dataset. The data were rearranged with *arrange* and *select*. Additionally, a descriptive column 'city' filled with "Austin-1" for each row was added to separate from Austin data in "txhousing" after joining because direct comparisons of the tidy tables have shown differences in the data (will be shown in the graph in  Fig 3). The final "aus1" table has 104 observations and 9 variables.
+
+- "txhousing" table was *filter*-ed (with *greple*) for Austin, Dallas and Houston data. The resultant "txh" table has 561 observations and 8 variables. Each city had equal number of 187 observations.
+
+- "full" table will undergo extensive pivoting_long to collapse into several neat long columns. It will be done in 3 steps: creating 2 "long" subsets and then joining them. I will not work on this table further in this project.
+
+```{r}
+######### "aus" table
+View(aus)
+
+
+aus1 <- aus %>% separate(Date, into = c("year","month")) %>% 
+  rename(median_aus = Price_med)%>% mutate(city = "Austin_1", y = 20) %>%
+  unite(year, y, year, sep = "", remove = T) %>%
+  mutate(month = case_when(month == "Jan" ~ 1,
+                           month == "Feb" ~ 2,
+                           month == "Mar" ~ 3,
+                           month == "Apr" ~ 4,
+                           month == "May" ~ 5,
+                           month == "Jun" ~ 6,
+                           month == "Jul" ~ 7,
+                           month == "Aug" ~ 8,
+                           month == "Sep" ~ 9,
+                           month == "Oct" ~ 10,
+                           month == "Nov" ~ 11,
+                           month == "Dec" ~ 12 )) %>% 
+  arrange(city, year, month) %>% 
+  select(city, year, month, everything()) 
+
+aus1$year = as.numeric(as.character(aus1$year))
+aus1$month = as.numeric(as.character(aus1$month))
+
+glimpse(aus1)
+aus1 %>% count(year)
+#View(aus1)
+######### Tidying "txhousing"
+
+txh <- txhousing %>% filter(grepl("Austin|Dallas|Houston",city)) %>% select(-date)
+txh %>% count(city)
+glimpse(txh)
+#View(txh) 
+
+######### "full" table
+#cleaning, leaving only 3 cities, renaming the cols for compliance
+full1 <-full %>% 
+  mutate(Area = case_when(Area == "Austin-Round Rock" ~ "Austin",
+                          Area == "Dallas-Fort Worth-Arlington"  ~ "Dallas",
+                          Area == "Dallas-Plano-Irving"  ~ "Remove",
+                          Area == "Fort Worth-Arlington" ~ "Remove",
+                          Area == "Houston-The Woodlands-Sugar Land"  ~ "Houston")) %>%
+  filter(grepl("Austin|Dallas|Houston", Area)) %>%
+  rename(city = Area, year = Year, quarter = Quarter) %>%
+  select(city, everything())
+
+full1 %>% head(10)
+
+#pivoting and joining "full1" table
+full_hpi <- full1 %>% group_by(city, year, quarter) %>% 
+  pivot_longer(contains("hpi"), values_to = "hpi") %>%
+  separate(name, into = c("type", "x")) %>%
+  select(city, year, quarter, hpi, type) %>%
+  ungroup() #%>% head()
+
+full_yoy <- full1 %>% group_by(city, year, quarter) %>%
+  pivot_longer(contains("YoY"), values_to = "yoy") %>%
+  separate(name, into = c("type", "y")) %>%
+  select(city, year, quarter, yoy, type) %>%
+  ungroup() #%>% head()
+          
+full1_long <- full_hpi %>% full_join(full_yoy, by = c("city", "year", "quarter", "type")) 
+full1_long %>% head(10)
+
+###############
+# full plot - hpi
+full1_long %>% group_by(city, year) %>% filter(type=="Overall") %>%
+  ggplot(aes(x=year, y=hpi, color = city))+
+  geom_point(stat="summary", fun.y = "mean", size = 3)+
+  theme(legend.position = c(0.1,0.9))+
+  geom_errorbar(stat = "summary", fun.data = "mean_se",
+                size=0.5, width = 0.5)+
+  labs(title = "Fig 6. hpi over Years")
+
+full1_long %>% group_by(city, year) %>% filter(type=="Overall") %>%
+  ggplot(aes(x=year, y=yoy, fill = city))+
+  geom_bar(stat = "summary", fun.y = "mean")+
+  theme(legend.position = c(0.4,0.8))+
+  geom_errorbar(stat = "summary", fun.data = "mean_se",
+                size=0.5, width = 0.5, position = position_dodge(0.9))+
+  labs(title = "Fig 7. yoy over Years") +
+  facet_wrap(~ city)+
+  theme(strip.background = element_rect(fill="orange")) +
+  theme(strip.text.x = element_text(size = 16, face = "bold")) +
+  theme(axis.title = element_text(size = 14))
+
+  #scale_y_continuous(breaks=seq(0, 2000, 250)) +
+  #labs(x = "Month", y = "Average Distance") +
+  #theme(strip.background = element_rect(fill="orange")) +
+  #theme(legend.position = "none") +
+  #theme(strip.text.x = element_text(size = 16, face = "bold")) +
+  #theme(axis.title = element_text(size = 14))
+
+
+```
+
+### Part 3. Research Question 1. Which months are the most "expensive" and "cheap" for buying a house in Austin?
+To answer this question the table "aus" alone is sufficient. I summarized the data for the median price grouped by month and visualized as a bar graph (Fig 1) with *stat = "identity"*, deliberately using SD (as opposed to SE), in "aus2". Fig 2 shows each year individually by faceting. 
+The conclusion is that the cheapest month on average is Jan (followed by Feb), while the most expensive is June, followed by May. Interestingly, these averages show higher prices in Apr than in July. 
+
+```{r}
+aus2 <- aus1 %>% group_by(month) %>% 
+  summarize(monthly_med = mean(median_aus, na.rm = T), monthly_sd = sd(median_aus), monthly_n=n()) %>% arrange(monthly_med)
+View(aus2)
+
+ggplot(aus2, aes(month, monthly_med))+geom_bar(stat = "identity", fill = "red")+
+  geom_errorbar(aes(y=monthly_med, ymin = monthly_med-monthly_sd, 
+                                   ymax = monthly_med+monthly_sd)) +
+  scale_x_continuous(breaks=seq(1,12,1))+
+  labs(x = "Month", y = "Average Median Price ($)") +
+  theme(axis.title = element_text(size = 14)) +
+  ggtitle("Fig 1. Average median price per month of Austin housing, 2011-2019") 
+
+
+aus1 %>% group_by(year) %>%  
+  ggplot(aes(month, median_aus))+
+  geom_line() +
+  geom_point(size = 3, color = "red") + 
+  scale_x_continuous(breaks=seq(1,12,1))+
+  labs(x = "Month", y = "Average Median Price ($)") +
+  theme(axis.title = element_text(size = 14)) +
+  ggtitle("Fig 2. Monthly median price of Austin housing, 2011-2019") +
+  facet_wrap(~ year, scales = "free_y")
+
+```
+
+### Part 4. Joining the datasets "aus" and "txh" into a single dataset "txhaus".
+Both tables have now mostly the same variables. Because they differ for Austin city in both tables, I earlier named the city "Austin_1" in the "aus" original table. This will add aus1 (tidy aus original table) to txh (tidy txhousing original table with only 3 cities) seamlessly as the 4th city by using *full_join*. Then I checked that there are no duplicates in the new table txhaus. Arithmetic comparison of the row count in the new joined table and two original tables shows that there is a clean addition, no rows dropped (could also be checked with an additional anti_join or inner_join by the # of observations). The new joined txaus table has 665 observations and 9 variables. 
+    
+```{r}
+txhaus <- txh %>% full_join(aus1, by = c("city", "year", "month", "median" = "median_aus", "sales", "volume", "listings", "inventory")) 
+#%>% group_by(city) %>% count(sort = T)
+glimpse(txhaus)
+#View(txhaus)
+sum(duplicated(txhaus))
+nrow(txhaus) - (nrow(aus)+nrow(txh))
+#txhaus %>% anti_join(txh)
+
+```
+
+### Part 5. Creating statistics tables for different purposes.
+1. First, summary of overall statistics from a joined table "txhaus".
+
+2. "txy" from the joined table "txhaus" - first, collapsing months into yearly stat and generating mean stat for median prices (mean, sd, se, n). The next step is cleaning which leaves only yearly stat for median prices, no other variables. This table is for visualizing RQ2.
+
+3. Creating summary statistics.
+
+
+```{r}
+
+# 1. summary statistics for each of the numeric variables overall
+txhaus %>% summary()
+
+# 2. making yearly summary of median prices and cleaning txy to have only the summary of median #prices (txy) and sale volumes (txyv) for RQ2
+txy <- txhaus %>% group_by(city, year) %>% 
+  mutate(mmed = mean(median, na.rm = T), 
+         sdmed = sd(median, na.rm = T), 
+         nmed = n_distinct(median), semed = sdmed/sqrt(nmed)) %>% 
+  select(city, year, mmed, sdmed, nmed, semed) %>% filter(!duplicated(city)) %>%
+  arrange(city) %>% ungroup() #%>% head(20)
+
+glimpse(txy)
+#View(txy)
+
+# 3. making yearly mean statistics for all numeric variables for RQ3 (PCA analysis)
+txypca <- txhaus %>% group_by(city, year)%>% 
+  summarize_at(c("sales","volume", "median", "listings", "inventory"), mean, na.rm=T) %>% 
+  ungroup() %>%  
+  filter(!is.na(listings))   
+
+glimpse(txypca)
+#View(txypca)
+
+```
+
+### Part 6. Research Question 2. What is the median price/sales dynamics over years for Austin, Dallas, and Houston? What did happen with the housing median prices/sale volumes in these cities around the subrime mortgage crash in 2008?
+
+We will answer this question by visualizations. Austin and Austin_1 have overlapping years but a bit different numbers probably because of different definition of the areas. Also, I used different approaches to visualizing the statistics in Figs 3 and 4.
+
+- Fig 3 demonstrates the median price over years. We can see that surprisingly, the market crash of 2008 did not lead to significant price drop in these 3 cities, however 2011-2019 led to an explosive growth in price.
+
+-Fig 4 shows that 2010 suffered the minimal sale volumes which recovered to the 2006 pre-crash maximums only after 2013.
+
+   
+```{r}
+
+# Fig 3. Yearly median prices for the 3 cities
+ggplot(txy, aes(year, mmed, color = city))+geom_point(size = 3)+geom_line()+
+  geom_errorbar(aes(y=mmed, ymin = mmed-semed, ymax = mmed+semed)) +
+  scale_x_continuous(breaks=seq(2000,2019,2))+
+  labs(x = "Year", y = "Average Median Price ($)") +
+  theme(axis.title = element_text(size = 14)) +
+  theme(legend.position = c(0.1,0.8))+
+  ggtitle("Fig 3. Average Median Price per Year") 
+
+### Fig 4. Yearly sales volume for the 3 cities
+txhaus %>% group_by(city, year) %>% 
+  ggplot(aes(x=year, y=sales, fill = city))+
+  geom_bar(stat="summary", fun.y = "mean", color = "black", size = 1)+
+  facet_wrap(~city)+
+theme(legend.position = c(0.6,0.78))+
+geom_errorbar(stat = "summary", fun.data = "mean_se",
+              size=0.5, width = 0.5, position=position_dodge(0.9))+
+            labs(title = "Fig 4. Average Sales Volume over Years")
+
+### Fig 4a. Yearly inventory for the 3 cities
+txhaus %>% group_by(city, year) %>% 
+  ggplot(aes(x=year, y=inventory, fill = city))+
+  geom_bar(stat="summary", fun.y = "mean", color = "black", size = 1)+
+  facet_wrap(~city)+
+theme(legend.position = c(0.6,0.78))+
+geom_errorbar(stat = "summary", fun.data = "mean_se",
+              size=0.5, width = 0.5, position=position_dodge(0.9))+
+            labs(title = "Fig 4a. Average Inventory over Years")
+  
+
+```
+
+### Part 7. Research Question 3. What is the relationship between different variables that describe the housing market in Austin, Dallas, and Houston? 
+
+To address this question I performed PCA analysis.
+
+1. In this case PC1 and PC2 are enough (cum prop 0.87, SD >1). The plot of cumulative proportions is elbowing after the third component which contributes slightly less than 10% proportion.
+
+2. The strongest component (overall strength) PC1 is driven by year and median prices (and opposed by the other vars mostly characterizing the housing supply). PC2 is driven by the inverse correlation between inventory and the rest of the factors. 
+
+3. The results plot shows that Austin is the strongest city on PC1 axis (has the strongest median price growth over years) while Houston growth (and somewhat less Dallas) is apparently driven by the higher inventory vs year (PC2). Higher inventory for Houston and Dallas is supported by the data (graphs are not shown here).
+
+4. Year seems to be the most important variable. Probably because of the population growth? Need to explore this by adding population variable. 
+
+```{r}
+# creating pca table (normalizing and scaling the variables) and summary of PCs and their coefficients. 
+txypca1 <- txypca %>% select(-city) %>% scale()
+rownames(txypca1)<-txypca$city
+View(txypca1)
+pca<-princomp(txypca1)
+names(pca)
+summary(pca, loadings=T)
+eigval<-pca$sdev^2 #square to convert SDs to eigenvalues
+varprop=round(eigval/sum(eigval),2) #proportion of var explained by each PC
+
+# The plot of cumulative proportions
+ggplot()+geom_bar(aes(y=varprop,x=1:6),stat="identity")+xlab("")+
+  geom_path(aes(y=varprop,x=1:6))+
+  geom_text(aes(x=1:6,y=varprop,label=round(varprop,2)),vjust=1,col="white",size=5)+
+  scale_y_continuous(breaks=seq(0,.6,.2),labels = scales::percent)+
+  scale_x_continuous(breaks=1:10)
+
+round(cumsum(eigval)/sum(eigval),2)
+eigval #eigenvalues
+summary(pca, loadings=T)
+eigen(cor(txypca1))
+
+# Plot of loadings on PC1 and PC2 axes 
+pca$loadings[1:6,1:2]%>%as.data.frame%>%rownames_to_column%>%
+  ggplot()+geom_hline(aes(yintercept=0),lty=2)+
+  geom_vline(aes(xintercept=0),lty=2)+ylab("PC2")+xlab("PC1")+
+  geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col="red")+
+  geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))
+
+results<-txypca%>%as.data.frame%>% #take original data
+  mutate(PC1=pca$scores[,1],PC2=pca$scores[,2],
+         PC3=pca$scores[,3],PC4=pca$scores[,4])
+#View(results)
+
+# The Results plot of year/city vs PC1, PC2
+results %>% ggplot(aes(PC1,PC2,color=year, shape=city))+geom_point(size=4)
+
+```
+
+
+  
+
+
+

@@ -1,0 +1,2 @@
+"0",""
+"0","den %>% ggplot(aes(CFA))+geom_histogram(color = ""white"")+facet_wrap(~sym, scales = ""free"")"

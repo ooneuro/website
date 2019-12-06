@@ -1,0 +1,628 @@
+---
+title: 'Project 2: Modeling, Testing, and Predicting, SDS348 Fall 2019.'
+author: "Olga Ostrovskaya, oo3662"
+date: ''
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+---
+
+
+
+<div id="modeling" class="section level1">
+<h1>Modeling</h1>
+<div id="guidelines-and-rubrc" class="section level2">
+<h2>Guidelines and Rubrc</h2>
+<ul>
+<li><strong>0. (5 pts)</strong> Introduce your dataset and each of your variables (or just your main variables if you have lots) in a paragraph.</li>
+</ul>
+<p><em>The dataset from our lab contains the information about 49 dendrite segments, such as the length of the segment (ZLen in micron), Average synaptic flat area (CFA) formed by excitatory synapses on each dendrite, total summed postsynaptic density area (PSD), both in micron squared. Also there’s the info about the number of protrusions (Prots) each dendrite has and the number of specific subtypes of protrusions (sp, filo, stubby, sh). There are 2 categorical variables: Condition (experimental) has 3 levels - Perfused, Control, and TBS; sym - is binary, where 0 denotes that this dendrite does NOT have any inhibitory synapses on it and 1 - the dendrite has at least one inhibitory synapse. Overall, 33 segments do not have inhibitory synapses (sym = 0) and 16 - have them (sym =1).</em></p>
+<pre class="r"><code>setwd(&quot;C:/Users/olgao/Documents/CLASSES/_SDS 348 Bioinformatics/R files/&quot;)
+#getwd()
+den &lt;- read.csv(&quot;DENmaster1114a.csv&quot;)
+
+####Tidying####
+den &lt;- den %&gt;% mutate(umprot = Prots/ZLen)
+den&lt;-den %&gt;% mutate(logCFA = log(CFA),logPSD = log(PSD), logZ = log(ZLen))
+den &lt;- den %&gt;% mutate(outcome = ifelse(sym == 0, &quot;inhibitory_no&quot;, &quot;inhibitory_yes&quot;))
+#View(den)
+#glimpse(den)</code></pre>
+<ul>
+<li><strong>1. (15 pts)</strong> Perform a MANOVA testing whether any of your numeric variables (or a subset of them, if including them all doesn’t make sense) show a mean difference across levels of one of your categorical variables (3). If they do, perform univariate ANOVAs to find response(s) showing a mean difference across groups (3), and perform post-hoc t tests to find which groups differ (3). Discuss the number of tests you have performed, calculate the probability of at least one type I error (if unadjusted), and adjust the significance level accordingly (bonferroni correction) before discussing significant differences (3). Briefly discuss assumptions and whether or not they are likely to have been met (2).</li>
+</ul>
+<pre class="r"><code>#Assumptions of normality &amp; plots
+
+#ZLen vs CFA (log Zlen vs log CFA - not much difference)
+den %&gt;% ggplot(aes(ZLen, CFA))+geom_point(aes(color=Condition), size=3)+
+  facet_wrap(~outcome, scales = &quot;free&quot;)+
+  theme(strip.background = element_rect(fill=&quot;orange&quot;)) +
+  theme(strip.text.x = element_text(size = 16, face = &quot;bold&quot;)) +
+  theme(axis.title = element_text(size = 14))+
+  labs(x = &quot;Z Length&quot;, y = &quot;Average CFA Area&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-2-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>den %&gt;% ggplot(aes(logZ, logCFA))+geom_point(aes(color=Condition), size=3)+
+  facet_wrap(~outcome, scales = &quot;free&quot;)+
+  theme(strip.background = element_rect(fill=&quot;orange&quot;)) +
+  theme(strip.text.x = element_text(size = 16, face = &quot;bold&quot;)) +
+  theme(axis.title = element_text(size = 14))+
+  labs(x = &quot;log Z Length&quot;, y = &quot;log Average CFA Area&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-2-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>  #theme(legend.position = c(0.4,0.8))+
+
+#ZLen vs PSD 
+den %&gt;% ggplot(aes(ZLen, PSD))+geom_point(aes(color=Condition), size=3)+
+  facet_wrap(~outcome, scales = &quot;free&quot;)+
+  theme(strip.background = element_rect(fill=&quot;orange&quot;)) +
+  theme(strip.text.x = element_text(size = 16, face = &quot;bold&quot;)) +
+  theme(axis.title = element_text(size = 14))+
+  labs(x = &quot;Z Length&quot;, y = &quot;Summed PSD Area&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-2-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>den %&gt;% ggplot(aes(Condition, CFA))+geom_boxplot()+facet_wrap(~outcome, scales = &quot;free&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-2-4.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>den %&gt;% ggplot(aes(ZLen))+geom_histogram(color = &quot;white&quot;)+facet_wrap(~sym, scales = &quot;free&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-2-5.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>den %&gt;% ggplot(aes(logZ))+geom_histogram(color = &quot;white&quot;)+facet_wrap(~sym, scales = &quot;free&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-2-6.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>den %&gt;% ggplot(aes(CFA))+geom_histogram(color = &quot;white&quot;)+facet_wrap(~sym, scales = &quot;free&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-2-7.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>den %&gt;% ggplot(aes(logCFA))+geom_histogram(color = &quot;white&quot;)+facet_wrap(~sym, scales = &quot;free&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-2-8.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#den %&gt;% ggplot(aes(PSD))+geom_histogram(color = &quot;white&quot;)+facet_wrap(~sym, scales = &quot;free&quot;)
+#den %&gt;% ggplot(aes(logPSD))+geom_histogram(color = &quot;white&quot;)+facet_wrap(~sym, scales = &quot;free&quot;)</code></pre>
+<p><em>Assumptions. This is the data from a scientific lab, and we follow a rigorous protocol to make it random/independent, in reality they are semi-independent. We can see that while for the cohort not containing inhibitory synapses (faceted by 0 and 1) the normality is not too bad, the log transform makes it better, and it is necessary for the case sym = 1 (containing inhibitory synapses, there are only 16 of them). So that I did the log transform. The variance for the control and TBS seems to be similar but perfused is apparently different - as seen from the boxplot (w/o faceting by sym). When faceted by the sym, there’s definitely a problem with Control with inhibitory synapses but it’s what we’ve got. The good news, there’s not so many of the outliers. There will be more tests for the assumptions below, and those are good.</em>
+<em>For the MANOVA I decided to subset only the dendrites w/o inhibitory synapses (sym = 0), and made a separate table bc as stated above, the data are skewed.</em></p>
+<pre class="r"><code>den_nosym &lt;- den %&gt;% filter(sym == 0)
+
+#MANOVA - significant!
+manCFA &lt;- manova(cbind(logCFA, logZ)~Condition,data = den_nosym)
+summary(manCFA)</code></pre>
+<pre><code>## Df Pillai approx F num Df den Df Pr(&gt;F)
+## Condition 2 0.66608 7.4902 4 60 5.808e-05 ***
+## Residuals 30
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code># 2 ANOVAs
+summary.aov(manCFA)</code></pre>
+<pre><code>## Response logCFA :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## Condition 2 0.6415 0.32074 1.9025 0.1668
+## Residuals 30 5.0578 0.16859
+##
+## Response logZ :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## Condition 2 3.2209 1.61046 18.158 6.8e-06 ***
+## Residuals 30 2.6607 0.08869
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code># 1 Post-hocs with 3 t-tests.
+pairwise.t.test(den$ZLen, den$Condition, p.adj=&quot;none&quot;) #3 t-tests</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  den$ZLen and den$Condition 
+## 
+##          Control Perfused
+## Perfused 1.3e-07 -       
+## TBS      0.62    5.1e-07 
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>#Probability of the type-I error for 6 tests total
+1-0.95^6   # P=0.265!</code></pre>
+<pre><code>## [1] 0.2649081</code></pre>
+<pre class="r"><code>0.05/6     #alphaadj = 0.0083</code></pre>
+<pre><code>## [1] 0.008333333</code></pre>
+<p><em>A one-way multivariate analysis of variance (MANOVA) was conducted to determine the effect of the experimental Condition (Perfused, Control, and TBS) on two dependent variables (synaptic flat area CFA and dendritic segment length ZLen).Significant differences were found among the three conditions on the two dependent measures, Pillai trace = .67, pseudo F(2, 30) = 7.49, p &lt; 0.0001. Univariate analyses of variance (ANOVAs) for each dependent variable were conducted as follow-up tests to the MANOVA,using the Bonferroni method for controlling Type I error rates for multiple comparisons. The univariate ANOVA for ZLen was significant, F(2, 30) = 18.16, p &lt; 0.0001. Post hoc analysis was performed conducting pairwise comparisons to determine which Condition differed in ZLen. The difference was between Perfused group and both Control and TBS after adjusting for multiple comparisons (bonferroni). Bonferroni adjustment resulted into a significance level of p=0.008, nevertheless it did not change the conclusions.ZLen differs significantly between Perfused and Control groups and Perfused and TBS groups.</em></p>
+<ul>
+<li><strong>2. (10 pts)</strong> Perform some kind of randomization test on your data (that makes sense). This can be anything you want! State null and alternative hypotheses, perform the test, and interpret the results (7). Create a plot visualizing the null distribution and the test statistic (3).</li>
+</ul>
+<pre class="r"><code>denPSD &lt;- den %&gt;% dplyr::select(outcome, logPSD)
+#View(denPSD)
+#Independent samples t-test
+#t.test(data=denPSD, logPSD~outcome)
+t.test(data=denPSD, logPSD~outcome, var.eq=T)</code></pre>
+<pre><code>##
+## Two Sample t-test
+##
+## data: logPSD by outcome
+## t = -2.2285, df = 47, p-value = 0.03067
+## alternative hypothesis: true difference in means is not
+equal to 0
+## 95 percent confidence interval:
+## -1.03327638 -0.05281276
+## sample estimates:
+## mean in group inhibitory_no mean in group inhibitory_yes
+## -2.906298 -2.363254</code></pre>
+<pre class="r"><code>denPSD%&gt;%group_by(outcome)%&gt;%
+  summarize(means=mean(logPSD))%&gt;%summarize(`mean_diff:`=diff(means))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `mean_diff:`
+##          &lt;dbl&gt;
+## 1        0.543</code></pre>
+<pre class="r"><code># Randomization 
+set.seed(348)
+rand_dist&lt;-vector()
+for(i in 1:5000){
+new&lt;-data.frame(outcome=sample(denPSD$outcome), logPSD=denPSD$logPSD)
+rand_dist[i]&lt;-mean(new[new$outcome==&quot;inhibitory_yes&quot;,]$logPSD)-
+mean(new[new$outcome==&quot;inhibitory_no&quot;,]$logPSD)}
+{hist(rand_dist,main=&quot;&quot;,ylab=&quot;&quot;); abline(v = -0.543,col=&quot;red&quot;);abline(v = quantile(rand_dist,.025),col=&quot;blue&quot;)}</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-4-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>mean(rand_dist&gt;0.543)*2 #pvalue</code></pre>
+<pre><code>## [1] 0.0288</code></pre>
+<p><em>H0: there’s no difference between the means of log summed postsynaptic density (logPSD) of the dendritic segments that contain and don’t contain inhibitory synapses. HA: there’s a difference between the means of log summed postsynaptic density (logPSD) of the dendritic segments that contain and don’t contain inhibitory synapses. The results: Normal t-test (equal variances): t = 2.2285, df = 47, p-value = 0.03067, significant (Welch ttest: t = 1.9201, df = 21.202, p-value = 0.0684, and it’s not significant, the code is commented above). The randomization test shows p-value 0.0344, which is significant, and very similar to the one that is reported by standard t-test, which rather confirms the significance (as opposed to Welch test). I did this task after everything else, so I got curious why LASSO identified PSD as an important variable, and this test goes in line with LASSO.</em></p>
+<ul>
+<li><p><strong>3. (35 pts)</strong> Build a linear regression model predicting one of your response variables from at least 2 other variables, including their interaction. Mean-center any numeric variables involved in the interaction.</p>
+<ul>
+<li>Interpret the coefficient estimates (do not discuss significance) (10)</li>
+<li>Plot the regression using <code>ggplot()</code>. If your interaction is numeric by numeric, refer to code near the end of WS15 to make the plot. If you have 3 or more predictors, just chose two to plot for convenience. (7)</li>
+<li>Check assumptions of linearity, normality, and homoskedasticity either graphically or using a hypothesis test (3)</li>
+<li>Regardless, recompute regression results with robust standard errors via <code>coeftest(..., vcov=vcovHC(...))</code>. Discuss significance of results, including any changes from before/after robust SEs if applicable. (7)</li>
+<li>What proportion of the variation in the outcome does your model explain? (3)</li>
+<li>Finally, rerun the regression but without interactions (just main effects); compare this with the interaction model and the null model using a likelihood ratio test (4)</li>
+</ul></li>
+</ul>
+<pre class="r"><code># Because the normality was not too bad for sym=0 group I then worked with ZLen w/o log transform.
+den_nosym$cZLen &lt;- den_nosym$ZLen - mean(den_nosym$ZLen)
+#View(den_nosym)
+fit3 &lt;- lm(logCFA ~ Condition*cZLen, data = den_nosym)
+summary(fit3)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = logCFA ~ Condition * cZLen, data =
+den_nosym)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -0.55120 -0.20933 -0.01735 0.15587 1.16238
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -2.71790 0.09486 -28.651 &lt;2e-16 ***
+## ConditionPerfused 0.90342 0.48611 1.858 0.0740 .
+## ConditionTBS -0.38217 0.17623 -2.169 0.0391 *
+## cZLen 0.02355 0.03855 0.611 0.5464
+## ConditionPerfused:cZLen 0.24045 0.11191 2.149 0.0408 *
+## ConditionTBS:cZLen 0.04039 0.05523 0.731 0.4709
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 0.3733 on 27 degrees of freedom
+## Multiple R-squared: 0.3399, Adjusted R-squared: 0.2177
+## F-statistic: 2.781 on 5 and 27 DF, p-value: 0.03756</code></pre>
+<pre class="r"><code># plot regression
+den_nosym %&gt;% ggplot(aes(ZLen, logCFA, color=Condition))+ 
+  geom_point(size=3)+geom_smooth(method=&quot;lm&quot;)+
+  theme(legend.position = c(0.1,0.8))</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># linearity and homoskedasticity (normality was assessed in Q1).
+resids&lt;-fit3$residuals; fitvals&lt;-fit3$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col=&quot;red&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-5-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bptest(fit3)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit3
+## BP = 5.398, df = 5, p-value = 0.3693</code></pre>
+<pre class="r"><code>ks.test(resids, &quot;pnorm&quot;, sd=sd(resids))</code></pre>
+<pre><code>## 
+##  One-sample Kolmogorov-Smirnov test
+## 
+## data:  resids
+## D = 0.12838, p-value = 0.603
+## alternative hypothesis: two-sided</code></pre>
+<pre class="r"><code>ggplot()+geom_histogram(aes(resids),bins=20)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-5-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids))</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-5-4.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># regression results with robust standard errors
+coeftest(fit3)</code></pre>
+<pre><code>##
+## t test of coefficients:
+##
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -2.717900 0.094864 -28.6505 &lt; 2e-16 ***
+## ConditionPerfused 0.903423 0.486112 1.8585 0.07404 .
+## ConditionTBS -0.382170 0.176227 -2.1686 0.03909 *
+## cZLen 0.023549 0.038547 0.6109 0.54636
+## ConditionPerfused:cZLen 0.240448 0.111908 2.1486 0.04079
+*
+## ConditionTBS:cZLen 0.040394 0.055232 0.7314 0.47086
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>coeftest(fit3, vcov=vcovHC(fit3))</code></pre>
+<pre><code>##
+## t test of coefficients:
+##
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -2.717900 0.055426 -49.0361 &lt; 2e-16 ***
+## ConditionPerfused 0.903423 1.351074 0.6687 0.50938
+## ConditionTBS -0.382170 0.154381 -2.4755 0.01987 *
+## cZLen 0.023549 0.019125 1.2313 0.22882
+## ConditionPerfused:cZLen 0.240448 0.269226 0.8931 0.37969
+## ConditionTBS:cZLen 0.040394 0.056065 0.7205 0.47742
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<p><em>I regressed log CFA value on the interaction of numeric var ZLen and categorical Condition. The equation is logCFA = -2.72 + 0.90Perfused - 0.38TBS + 0.02cZLen + 0.24Perfused:ZLen + 0.04TBS:ZLen. CFA is equal -2.72 for a dendrite in Control with an average ZLen. For Control, each increase in 1um of ZLen leads to an increase in 0.02 of log CFA, on average. For Perfused condition, with an average ZLen, log CFA increased 0.9 um comparing with Control. For TBS dendrite with an average ZLen, log CFA decreased 0.38 um, comparing with Control.There’s a difference of (0.24 log um square/per1um) in slope of ZLen on log CFA for Perfused vs Control (the effect of ZLen on CFA is different for Perfused vs Control). For Perfused, the slope on log CFA is 0.24 more than for Control. There’s a difference of (0.04 log um square/per1um) in slope of ZLen on log CFA for TBS vs Control (the effect of ZLen on CFA is different for TBS vs Control). For TBS, the slope on log CFA is 0.24 more than for Control. Assumptions: except for 2 outliers, linearity, homoskedasticity and normality of the residuals looks good. Other requirements were discussed above in Q1. Before the robust SEs application, the effect of ZLen on log CFA was significantly different between TBS and Control, and the slopes of Perfused vs Control was different on log CFA, which is seen on the graph. After the correction, only the main effect of TBS is significant. Our model explains 21.77% of the variation in log flat area (logCFA).</em></p>
+<pre class="r"><code>### Same as previous chunk but includes all of the dendrites (n=49).
+####################################################################
+# Because the normality was not too bad for sym=0 group I then worked with ZLen w/o log transform.
+den$cZLen &lt;- den$ZLen - mean(den$ZLen)
+#View(den)
+fit3all &lt;- lm(logCFA ~ Condition*cZLen, data = den)
+summary(fit3all)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = logCFA ~ Condition * cZLen, data = den)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -0.95707 -0.27303 -0.01389 0.19841 1.00173
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -2.6949196 0.1354257 -19.900 &lt;2e-16 ***
+## ConditionPerfused 0.3191154 0.2663907 1.198 0.238
+## ConditionTBS -0.2672079 0.2150152 -1.243 0.221
+## cZLen 0.0095839 0.0449481 0.213 0.832
+## ConditionPerfused:cZLen 0.1084022 0.0769913 1.408 0.166
+## ConditionTBS:cZLen 0.0009198 0.0595762 0.015 0.988
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 0.4606 on 43 degrees of freedom
+## Multiple R-squared: 0.1209, Adjusted R-squared: 0.01869
+## F-statistic: 1.183 on 5 and 43 DF, p-value: 0.3334</code></pre>
+<pre class="r"><code># plot regression
+den %&gt;% ggplot(aes(ZLen, logCFA, color=Condition))+ 
+  geom_point(size=3)+geom_smooth(method=&quot;lm&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-6-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>  #theme(legend.position = c(0.1,0.8))
+
+# linearity and homoskedasticity (normality was assessed in Q1).
+resids&lt;-fit3all$residuals; fitvals&lt;-fit3all$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col=&quot;red&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-6-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>bptest(fit3all)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit3all
+## BP = 10.879, df = 5, p-value = 0.05384</code></pre>
+<pre class="r"><code>ks.test(resids, &quot;pnorm&quot;, sd=sd(resids))</code></pre>
+<pre><code>## 
+##  One-sample Kolmogorov-Smirnov test
+## 
+## data:  resids
+## D = 0.11915, p-value = 0.455
+## alternative hypothesis: two-sided</code></pre>
+<pre class="r"><code>ggplot()+geom_histogram(aes(resids),bins=20)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-6-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids))</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-6-4.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># regression results with robust standard errors
+coeftest(fit3all)</code></pre>
+<pre><code>##
+## t test of coefficients:
+##
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -2.69491964 0.13542571 -19.8996 &lt;2e-16 ***
+## ConditionPerfused 0.31911541 0.26639072 1.1979 0.2375
+## ConditionTBS -0.26720789 0.21501522 -1.2427 0.2207
+## cZLen 0.00958393 0.04494808 0.2132 0.8322
+## ConditionPerfused:cZLen 0.10840221 0.07699127 1.4080
+0.1663
+## ConditionTBS:cZLen 0.00091976 0.05957616 0.0154 0.9878
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>coeftest(fit3, vcov=vcovHC(fit3all))</code></pre>
+<pre><code>##
+## t test of coefficients:
+##
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -2.717900 0.074214 -36.6227 &lt; 2.2e-16 ***
+## ConditionPerfused 0.903423 0.333829 2.7062 0.011649 *
+## ConditionTBS -0.382170 0.261538 -1.4612 0.155491
+## cZLen 0.023549 0.021421 1.0993 0.281327
+## ConditionPerfused:cZLen 0.240448 0.080415 2.9901
+0.005887 **
+## ConditionTBS:cZLen 0.040394 0.066045 0.6116 0.545906
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<ul>
+<li><strong>4. (5 pts)</strong> Rerun same regression model (with interaction), but this time compute bootstrapped standard errors. Discuss any changes you observe in SEs and p-values using these SEs compared to the original SEs and the robust SEs)</li>
+</ul>
+<pre class="r"><code>######## 4. Bootstrapped SE
+summary(fit3)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = logCFA ~ Condition * cZLen, data =
+den_nosym)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -0.55120 -0.20933 -0.01735 0.15587 1.16238
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -2.71790 0.09486 -28.651 &lt;2e-16 ***
+## ConditionPerfused 0.90342 0.48611 1.858 0.0740 .
+## ConditionTBS -0.38217 0.17623 -2.169 0.0391 *
+## cZLen 0.02355 0.03855 0.611 0.5464
+## ConditionPerfused:cZLen 0.24045 0.11191 2.149 0.0408 *
+## ConditionTBS:cZLen 0.04039 0.05523 0.731 0.4709
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 0.3733 on 27 degrees of freedom
+## Multiple R-squared: 0.3399, Adjusted R-squared: 0.2177
+## F-statistic: 2.781 on 5 and 27 DF, p-value: 0.03756</code></pre>
+<pre class="r"><code>set.seed(1234)
+# repeat 5000 times, saving the coefficients each time
+samp_distn&lt;-replicate(5000, {
+  boot_dat&lt;-den_nosym[sample(nrow(den_nosym),replace=TRUE),]
+  fit4 &lt;- lm(logCFA ~ Condition*cZLen, data = boot_dat)
+  coef(fit4)
+})
+## Estimated SEs
+#View(samp_distn)
+out &lt;- do.call(rbind,lapply(samp_distn,unlist)) %&gt;% as.data.frame 
+out %&gt;% summarize_all(sd, na.rm = T)</code></pre>
+<pre><code>## (Intercept) ConditionPerfused ConditionTBS cZLen
+ConditionPerfused:cZLen ConditionTBS:cZLen
+## 1 0.05582595 2.956035 0.3213298 0.01950598 0.6163848
+0.2305894</code></pre>
+<pre class="r"><code>## Empirical 95% CI
+out %&gt;% gather %&gt;% group_by(key)%&gt;%
+summarize(lower=quantile(value,.025, na.rm = T), upper=quantile(value,.975, na.rm = T), na.rm = T)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   key                       lower   upper na.rm
+##   &lt;chr&gt;                     &lt;dbl&gt;   &lt;dbl&gt; &lt;lgl&gt;
+## 1 (Intercept)             -2.85   -2.62   TRUE 
+## 2 ConditionPerfused       -0.969   6.54   TRUE 
+## 3 ConditionPerfused:cZLen -0.190   1.35   TRUE 
+## 4 ConditionTBS            -0.906  -0.0833 TRUE 
+## 5 ConditionTBS:cZLen      -0.0557  0.260  TRUE 
+## 6 cZLen                   -0.0101  0.0686 TRUE</code></pre>
+<p><em>Bootstrapped SEs are off, mostly for Perfused Condition and interaction, because we have a small sample size and Perfused condition also has most variability between the data points. In general, SEs by bootstrap are larger (except cZLen and TBS), then for most of variables, t will get smaller (t=b/SE), and significance should become less, p value will increase.</em></p>
+<ul>
+<li><p><strong>5. (40 pts)</strong> Perform a logistic regression predicting a binary categorical variable (if you don’t have one, make/get one) from at least two explanatory variables (interaction not necessary).</p>
+<ul>
+<li>Interpret coefficient estimates in context (10)</li>
+<li>Report a confusion matrix for your logistic regression (2)</li>
+<li>Compute and discuss the Accuracy, Sensitivity (TPR), Specificity (TNR), and Recall (PPV) of your model (5)</li>
+<li>Using ggplot, plot density of log-odds (logit) by your binary outcome variable (3)</li>
+<li>Generate an ROC curve (plot) and calculate AUC (either manually or with a package); interpret (10)</li>
+<li>Perform 10-fold (or repeated random sub-sampling) CV and report average out-of-sample Accuracy, Sensitivity, and Recall (10)</li>
+</ul></li>
+</ul>
+<pre class="r"><code>############## 5. Logistic Regression
+####don&#39;t touch
+class_diag&lt;-function(probs,truth){
+  
+  tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+  
+  if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord&lt;-order(probs, decreasing=TRUE)
+  probs &lt;- probs[ord]; truth &lt;- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+  TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+  
+  n &lt;- length(TPR)
+  auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+  
+  data.frame(acc,sens,spec,ppv,auc)
+}
+######end don&#39;t touch
+
+### 
+#View(den)
+fit5&lt;-glm(sym~Condition+ZLen+Prots+sp+filo+stubby+CFA+PSD, data=den, family=&quot;binomial&quot;)
+summary(fit5)</code></pre>
+<pre><code>##
+## Call:
+## glm(formula = sym ~ Condition + ZLen + Prots + sp + filo
++ stubby +
+## CFA + PSD, family = &quot;binomial&quot;, data = den)
+##
+## Deviance Residuals:
+## Min 1Q Median 3Q Max
+## -1.6396 -0.5471 -0.2511 0.5128 2.2891
+##
+## Coefficients:
+## Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept) -3.6442 2.4256 -1.502 0.1330
+## ConditionPerfused 2.9745 1.6330 1.821 0.0685 .
+## ConditionTBS 2.3163 1.4625 1.584 0.1132
+## ZLen -0.2927 0.2639 -1.109 0.2674
+## Prots 0.2620 0.2056 1.274 0.2025
+## sp 0.1393 0.3811 0.366 0.7147
+## filo -0.6717 0.8256 -0.814 0.4159
+## stubby 0.4788 0.4848 0.988 0.3234
+## CFA 14.3379 13.1922 1.087 0.2771
+## PSD -5.0865 12.4910 -0.407 0.6838
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## (Dispersion parameter for binomial family taken to be 1)
+##
+## Null deviance: 61.906 on 48 degrees of freedom
+## Residual deviance: 36.673 on 39 degrees of freedom
+## AIC: 56.673
+##
+## Number of Fisher Scoring iterations: 6</code></pre>
+<pre class="r"><code>exp(coef(fit5))</code></pre>
+<pre><code>## (Intercept) ConditionPerfused ConditionTBS ZLen Prots
+## 2.614194e-02 1.957902e+01 1.013817e+01 7.462360e-01
+1.299558e+00
+## sp filo stubby CFA PSD
+## 1.149497e+00 5.108470e-01 1.614088e+00 1.686034e+06
+6.179344e-03</code></pre>
+<pre class="r"><code>den$phh&lt;-predict(fit5,type=&quot;response&quot;)
+ggplot(den, aes(CFA,phh))+geom_point(aes(color=as.factor(sym)),alpha=.7,size=5)+
+  geom_rug(aes(color=as.factor(sym)),sides=&quot;right&quot;)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-8-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>prob &lt;- predict(fit5, type = &quot;response&quot;)
+
+class_diag(prob, den$sym)</code></pre>
+<pre><code>##         acc sens      spec ppv       auc
+## 1 0.8571429 0.75 0.9090909 0.8 0.8996212</code></pre>
+<pre class="r"><code>table(predict=as.numeric(prob&gt;.5),truth=den$sym)%&gt;%addmargins</code></pre>
+<pre><code>##        truth
+## predict  0  1 Sum
+##     0   30  4  34
+##     1    3 12  15
+##     Sum 33 16  49</code></pre>
+<pre class="r"><code>#####
+# density of log-odds (logit) plot
+
+den$logit&lt;-predict(fit5) #get predicted log-odds
+den %&gt;% ggplot(aes(logit, fill=outcome))+geom_density(alpha=.3)+
+  geom_vline(xintercept=0,lty=2)</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-8-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#ROC plot
+
+data &lt;-den
+data$y &lt;- data$sym
+data$prob &lt;- data$phh
+sens&lt;-function(p,data=data, y=y) mean(data[data$y==1,]$prob&gt;p)
+spec&lt;-function(p,data=data, y=y) mean(data[data$y==0,]$prob&lt;p)
+sensitivity&lt;-sapply(seq(0,1,.01),sens,data)
+specificity&lt;-sapply(seq(0,1,.01),spec,data)
+ROC1&lt;-data.frame(sensitivity,specificity,cutoff=seq(0,1,.01))
+#ROC1%&gt;%gather(key,rate,-cutoff)%&gt;%ggplot(aes(cutoff,rate,color=key))+geom_path()+
+# geom_vline(xintercept=c(.1,.5),lty=2,color=&quot;gray50&quot;)
+ROC1$TPR&lt;-sensitivity
+ROC1$FPR&lt;-1-specificity
+ROC1%&gt;%ggplot(aes(FPR,TPR))+geom_path(size=1.5)+geom_segment(aes(x=0,y=0,xend=1,yend=1),lty=2)+
+  scale_x_continuous(limits = c(0,1))</code></pre>
+<p><img src="/Project2_oo3662_full_files/figure-html/unnamed-chunk-8-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>den1 &lt;- data
+#####
+auc(den1$y,prob)</code></pre>
+<pre><code>## [1] 0.8996212</code></pre>
+<pre class="r"><code># 10-fold (or repeated random sub-sampling) CV
+
+set.seed(1234)
+k=5 #choose number of folds
+data1&lt;-den1[sample(nrow(den1)),] #randomly order rows
+folds&lt;-cut(seq(1:nrow(den1)),breaks=k,labels=F) #create folds
+diags&lt;-NULL
+for(i in 1:k){
+  ## Create training and test sets
+  train&lt;-data1[folds!=i,]
+  test&lt;-data1[folds==i,]
+  truth&lt;-test$y
+  ## Train model on training set
+  fit&lt;-glm(sym~Condition+ZLen+Prots+sp+filo+stubby+CFA+PSD, data=train, family=&quot;binomial&quot;)
+  probs&lt;-predict(fit,newdata = test,type=&quot;response&quot;)
+  ## Test model on test set (save all k results)
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+apply(diags,2,mean) #average across all k results</code></pre>
+<pre><code>##       acc      sens      spec       ppv       auc 
+## 0.7533333 0.6666667 0.8092857 0.7033333 0.7928571</code></pre>
+<p><em>1. I built a model that predicts if a dendrite has inhibitory synapse (sym = 1) or does not have (sym = 0) from CFA, PSD areas, Condition, length - ZLen, total number of protrusions - Prots, and number of protrusion subtypes: spines, filopodium, stubby. The coefficients (exponentiated) indicate that the odds for the dendrite to have an inhibitory synapse is 19.6 times higher for Perfused vs Control dendrites (multiplication). These odds are 10.1 times higher if condition is TBS. For each 1 um increase in ZLen the odds are multiplied by 0.746 (decrease, in fact) for Control dendrites. For the 1um square increase in average flat area CFA leads to 16.9+05 multiplication in odds! For the same increase in summed area (PSD), the odds decrease by 6.18-03 times. Total protrusion number with addition of each one by one, increases the odds by 1.3 times; spine number - by 1.15, stubby - by 1.61. Increase in filopodium number leads to a decrease in odds - multiplication by 0.51. Intercept (exponentiated) - 0.026 - is the odds (of having an inhibitory synapse) of the dendritic segment in Control condition with the zero length and no protrusions and no excitatory synapses (so, CFA and PSD are both zero).</em>
+<em>2. This model has excellent AUC 0.9, Accuracy 0.86, modest Sensitivity (TPR) 0.75, Specificity (TNR) 0.91, and good Recall (PPV) of 0.8. Accuracy is 42 cases correct out of 49 (86%). Sensitivity is ok 0.75 meaning it captures 75% of positives (12 out of 16 contain inhibitory synapses), the rest is labeled as negatives (4) - this fair. Very high level of TNR (Specificity) - 91% (30 out of 33 correct predictions of having no inhibitory synapses). Recall/Precision is marginally good - 80% of cases are classified correctly (12 out of 15 predicted as having inhibitory synapses).</em>
+<em>3. ROC plot confirms an excellent AUC of 0.9. which corresponds to the area under the curve, if it’s 1 then it’s ideal - 100% true predictions. Average out-of-sample Accuracy, Sensitivity, and Recall were somewhat lower with acc 0.75, quite low sens 0.67, spec 0.81, recall 0.70, and AUC still modest 0.79. These results point to a possible overfit by the model.</em></p>
+<ul>
+<li><strong>6. (10 pts)</strong> Choose one variable you want to predict (can be one you used from before; either binary or continuous) and run a LASSO regression inputting all the rest of your variables as predictors. Choose lambda to give the simplest model whose accuracy is near that of the best (i.e., <code>lambda.1se</code>). Discuss which variables are retained. Perform 10-fold CV using this model: if response in binary, compare model’s out-of-sample accuracy to that of your logistic regression in part 5; if response is numeric, compare the residual standard error (at the bottom of the summary output, aka RMSE): lower is better fit!</li>
+</ul>
+<pre class="r"><code>####################  6. LASSO
+#
+fit5&lt;-glm(sym~Condition+ZLen+Prots+sp+filo+stubby+CFA+PSD, data=den, family=&quot;binomial&quot;)
+den$phh&lt;-predict(fit5,type=&quot;response&quot;)
+#ggplot(den, aes(CFA,phh))+geom_point(aes(color=as.factor(sym)),alpha=.7,size=5)+
+# geom_rug(aes(color=as.factor(sym)),sides=&quot;right&quot;)
+prob &lt;- predict(fit5, type = &quot;response&quot;)
+
+y&lt;-as.matrix(den$sym)
+x &lt;- model.matrix(fit5) 
+x &lt;-x[,-1] 
+x &lt;- scale(x)
+cv&lt;-cv.glmnet(x,y, family=&quot;binomial&quot;)
+lasso &lt;- glmnet(x,y,lambda = cv$lambda.1se, family=&quot;binomial&quot;)
+coef(lasso)</code></pre>
+<pre><code>## 10 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                            s0
+## (Intercept)       -0.74366485
+## ConditionPerfused  0.31690525
+## ConditionTBS       .         
+## ZLen               .         
+## Prots              .         
+## sp                 .         
+## filo               .         
+## stubby             .         
+## CFA                .         
+## PSD                0.08550112</code></pre>
+<pre class="r"><code># Create a new table for running only lasso-var glm
+den2 &lt;- den %&gt;% mutate(Perfused = Condition) %&gt;% dplyr::select(-Condition)
+den2$Perfused &lt;- ifelse(den2$Perfused == &quot;Perfused&quot;, 1,0)
+den2$y &lt;- den2$sym
+den2$prob &lt;- den2$phh
+#View(den2)
+
+# Re-fit glm with only lasso-variables
+fit6 &lt;- glm(sym~Perfused+PSD, data=den2, family = &quot;binomial&quot;)
+prob6 &lt;- predict(fit6, type = &quot;response&quot;)
+# Classification Diagnostics
+class_diag(prob6, den2$sym)</code></pre>
+<pre><code>##         acc   sens      spec       ppv       auc
+## 1 0.8163265 0.6875 0.8787879 0.7333333 0.8238636</code></pre>
+<pre class="r"><code>table(predict=as.numeric(prob6&gt;.5),truth=den2$sym)%&gt;%addmargins</code></pre>
+<pre><code>##        truth
+## predict  0  1 Sum
+##     0   29  5  34
+##     1    4 11  15
+##     Sum 33 16  49</code></pre>
+<pre class="r"><code># 5-fold CV
+set.seed(1234)
+k=5 #choose number of folds
+data2&lt;-den2[sample(nrow(den2)),] #randomly order rows
+folds&lt;-cut(seq(1:nrow(den2)),breaks=k,labels=F) #create folds
+diags&lt;-NULL
+for(i in 1:k){
+  ## Create training and test sets
+  train&lt;-data2[folds!=i,]
+  test&lt;-data2[folds==i,]
+  truth&lt;-test$y
+  ## Train model on training set
+  fit &lt;- glm(sym~Perfused+PSD, data=train, family = &quot;binomial&quot;)
+  probs&lt;-predict(fit,newdata = test,type=&quot;response&quot;)
+  ## Test model on test set (save all k results)
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+apply(diags,2,mean) #average across all k results</code></pre>
+<pre><code>##       acc      sens      spec       ppv       auc 
+## 0.7755556 0.6666667 0.8528571 0.7166667 0.8209524</code></pre>
+<pre class="r"><code>####</code></pre>
+<p><em>After LASSO (+1SD) only Condition-Perfused and (surprise) PSD variables left. Re-fitting with those only and 5-fold CV gives similar numbers, so the fit seems valid. Out of sample AUC is 0.82 - not a huge drop from 0.9 when we fitted all variables. Accuracy is also 82% (similar to 86% in the full model). Sensitivity is now 69% - a further drop from 75%, which is slightly below fair treshold (but still better than a chance). Specificity is 88% vs 91% - not much change. Last, Precision (Recall) PPV dropped to 73% from 80% - fair.</em></p>
+<pre class="r"><code>#data(package = .packages(all.available = TRUE))</code></pre>
+<p>…</p>
+</div>
+</div>

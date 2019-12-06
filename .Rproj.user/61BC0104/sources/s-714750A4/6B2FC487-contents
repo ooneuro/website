@@ -1,0 +1,14 @@
+---
+title: "Resume"
+author: "Olga Ostrovskaya"
+date: "12/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## My Resume/CV - pick your flavor!
+
+[Academic CV](/CV-OlgaOstrovskaya_2019.pdf)

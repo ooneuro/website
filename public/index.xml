@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Olga Ostrovskaya</title>
+    <link>/</link>
+    <description>Recent content on Olga Ostrovskaya</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Fri, 06 Dec 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>My 1st blog post</title>
+      <link>/blog/my-1st-blog-post/</link>
+      <pubDate>Fri, 06 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/my-1st-blog-post/</guid>
+      <description>Here’s my first blog post!Some text
+plot(faithful$eruptions, faithful$waiting)</description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>/projects/</link>
+      <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>
+      
+      <guid>/projects/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Project 1: Exploratory Data Analysis</title>
+      <link>/project1_oo3662_full/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project1_oo3662_full/</guid>
+      <description>Data Wrangling and Data ExplorationPart 1. General description of the project, datasets, and workflow.My Project 1 goal is to analyze housing data in Austin, Dallas and Houston. I’m focusing mostly on the prices. I split my data analysis into 3 research questions, utilizing the requested functions and visualizations. Summarizing statistics is calculated and used as needed. I’m commenting some code lines that I used for convenience or to doublecheck the output.</description>
+    </item>
+    
+    <item>
+      <title>Project 2: Modeling, Testing, and Predicting, SDS348 Fall 2019.</title>
+      <link>/project2_oo3662_full/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project2_oo3662_full/</guid>
+      <description>ModelingGuidelines and Rubrc0. (5 pts) Introduce your dataset and each of your variables (or just your main variables if you have lots) in a paragraph.The dataset from our lab contains the information about 49 dendrite segments, such as the length of the segment (ZLen in micron), Average synaptic flat area (CFA) formed by excitatory synapses on each dendrite, total summed postsynaptic density area (PSD), both in micron squared.</description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>/projects/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/</guid>
+      <description>ProjectsProject 1. Exploratory Data Analysis
+Project 2. Statistical Modeling
+</description>
+    </item>
+    
+    <item>
+      <title>Resume</title>
+      <link>/resume/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/resume/</guid>
+      <description>My Resume/CV - pick your flavor!Academic CV
+</description>
+    </item>
+    
+  </channel>
+</rss>
