@@ -6,34 +6,15 @@
     <description>Recent content on Olga Ostrovskaya</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Fri, 06 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 11 Dec 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>My 1st blog post</title>
-      <link>/blog/my-1st-blog-post/</link>
-      <pubDate>Fri, 06 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/my-1st-blog-post/</guid>
-      <description>Here’s my first blog post!Some text
-plot(faithful$eruptions, faithful$waiting)</description>
-    </item>
-    
-    <item>
-      <title>Projects</title>
-      <link>/projects/</link>
-      <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>
-      
-      <guid>/projects/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Project 1: Exploratory Data Analysis</title>
       <link>/project1_oo3662_full/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
       
       <guid>/project1_oo3662_full/</guid>
       <description>Data Wrangling and Data ExplorationPart 1. General description of the project, datasets, and workflow.My Project 1 goal is to analyze housing data in Austin, Dallas and Houston. I’m focusing mostly on the prices. I split my data analysis into 3 research questions, utilizing the requested functions and visualizations. Summarizing statistics is calculated and used as needed. I’m commenting some code lines that I used for convenience or to doublecheck the output.</description>
@@ -42,10 +23,37 @@ plot(faithful$eruptions, faithful$waiting)</description>
     <item>
       <title>Project 2: Modeling, Testing, and Predicting, SDS348 Fall 2019.</title>
       <link>/project2_oo3662_full/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
       
       <guid>/project2_oo3662_full/</guid>
       <description>ModelingGuidelines and Rubrc0. (5 pts) Introduce your dataset and each of your variables (or just your main variables if you have lots) in a paragraph.The dataset from our lab contains the information about 49 dendrite segments, such as the length of the segment (ZLen in micron), Average synaptic flat area (CFA) formed by excitatory synapses on each dendrite, total summed postsynaptic density area (PSD), both in micron squared.</description>
+    </item>
+    
+    <item>
+      <title>Python</title>
+      <link>/python/</link>
+      <pubDate>Mon, 09 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/python/</guid>
+      <description>My new postprint(&amp;quot;some python&amp;quot;)## some python</description>
+    </item>
+    
+    <item>
+      <title>Cheapskaters&#39; Adventures in Alaska 2019 (in Russian)</title>
+      <link>/blog/alaska2019/</link>
+      <pubDate>Fri, 06 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/alaska2019/</guid>
+      <description>Cheapskaters’ Adventures in AlaskaDay 1-2 - June 23-24, 2019Photo Day 1-2 Летели AUS - SEA - ANC, рейс из Сиэттла, кстати, считается международным. Задержали на час, нажрались в alaska lounge как скоты, он там хороший и просторный. Много было азиатов, т.к. соседний гейт летел в Пекин. Прибыли в Анкорейж около 15 ч, на Убере доехали до Avis и взяли машину (это на 10-20% дешевле, чем из аэропорта, $1008 за 11 дней).</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/hw11_oo3662/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/hw11_oo3662/</guid>
+      <description>HW11_oo3662   /*! * * Twitter Bootstrap * */ /*! * Bootstrap v3.3.7 (http://getbootstrap.com) * Copyright 2011-2016 Twitter, Inc. * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE) */ /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */ html { font-family: sans-serif; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; } body { margin: 0; } article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary { display: block; } audio, canvas, progress, video { display: inline-block; vertical-align: baseline; } audio:not([controls]) { display: none; height: 0; } [hidden], template { display: none; } a { background-color: transparent; } a:active, a:hover { outline: 0; } abbr[title] { border-bottom: 1px dotted; } b, strong { font-weight: bold; } dfn { font-style: italic; } h1 { font-size: 2em; margin: 0.</description>
     </item>
     
     <item>
@@ -54,8 +62,20 @@ plot(faithful$eruptions, faithful$waiting)</description>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/projects/</guid>
-      <description>ProjectsProject 1. Exploratory Data Analysis
-Project 2. Statistical Modeling
+      <description>Data Science Projects December 2019
+Project 1. Exploratory Data Analysis
+Project 2. Statistical Modeling</description>
+    </item>
+    
+    <item>
+      <title>Resume</title>
+      <link>/python/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/python/</guid>
+      <description>Python ExercisesDecember 2019
+SDS 348 Homework 10
+SDS 348 Homework 11
 </description>
     </item>
     
@@ -65,7 +85,8 @@ Project 2. Statistical Modeling
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/resume/</guid>
-      <description>My Resume/CV - pick your flavor!Academic CV
+      <description>My Resume/CV - pick your flavor!December 2019
+Academic CV
 </description>
     </item>
     

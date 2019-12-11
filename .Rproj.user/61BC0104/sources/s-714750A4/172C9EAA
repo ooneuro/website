@@ -2,18 +2,18 @@
     "collab_server" : "",
     "contents" : "",
     "created" : 1575651905603.000,
-    "dirty" : false,
+    "dirty" : true,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "3530872796",
+    "hash" : "0",
     "id" : "172C9EAA",
-    "lastKnownWriteTime" : 1575659841,
-    "last_content_update" : 1575659841042,
+    "lastKnownWriteTime" : 1575926991,
+    "last_content_update" : 1575930442650,
     "path" : "~/CLASSES/_SDS 348 Bioinformatics/Project3/config.toml",
     "project_path" : "config.toml",
     "properties" : {
-        "cursorPosition" : "0,11",
-        "scrollLine" : "0"
+        "cursorPosition" : "50,16",
+        "scrollLine" : "25"
     },
     "read_only" : false,
     "read_only_alternatives" : [

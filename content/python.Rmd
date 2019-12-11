@@ -1,0 +1,18 @@
+---
+title: "Resume"
+author: "Olga Ostrovskaya"
+date: "2019-12-6"
+output: html_document
+showpagemeta: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Python Exercises
+December 2019
+
+[SDS 348 Homework 10](/HW10_oo3662.pdf)
+
+[SDS 348 Homework 11](/HW11_oo3662.html)

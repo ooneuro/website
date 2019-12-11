@@ -1,0 +1,45 @@
+---
+title: "Python Exercises"
+author: "Olga Ostrovskaya"
+date: "2019-12-6"
+output: html_document
+showpagemeta: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(reticulate)
+```
+
+#[SDS 348 Homework 10](/HW10_oo3662.pdf)
+
+#[SDS 348 Homework 11](/HW11_oo3662.html)
+
+## Plotting simple graphs in python with seaborn
+Here I'm using Old Faithful dataset from R "transporting" it to Python.
+#descriptive statistics and boxplot
+First, we are trying to take a simple look at the dataset. 
+```{python}
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from matplotlib import pyplot as plt
+
+faithful=r.faithful 
+faithful.describe()
+
+#boxplot
+sns.set_style("darkgrid")
+sns.boxplot(data=faithful)
+plt.title("Faithful geyser")
+plt.show()
+
+
+```
+
+The boxplot is not really informative however if we visualize a possible relationship between the variables, we can see two disinct populations of geysers!
+
+And this is confirmed by histogram as well. 
+
+
+

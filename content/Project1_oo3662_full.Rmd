@@ -1,7 +1,7 @@
 ---
 title: 'Project 1: Exploratory Data Analysis'
 author: "Olga Ostrovskaya, oo3662. SDS348 Fall 2019"
-date: "2019-10"
+date: "2019-12-11"
 output:
   html_document:
     toc: yes

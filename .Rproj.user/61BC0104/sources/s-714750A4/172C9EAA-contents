@@ -22,7 +22,7 @@ theme = "hugo-sustain"
 [params.social]
   Github        = "ooneuro"
   Email         = "islandsky@utexas.edu"
-  Twitter       = "username"
+ # Twitter       = "username"
   LinkedIn      = "www.linkedin.com/in/olga-ostrovskaya-ooneuro"
  # Stackoverflow = "username"
  # Medium        = "username"
@@ -38,9 +38,14 @@ theme = "hugo-sustain"
   name = "projects"
   identifier = "projects"
   weight = 200
-  url = "/Projects/"
+  url = "/projects/"
 [[menu.main]]
   name = "resume"
   identifier = "resume"
   weight = 300
   url = "/Resume/"
+  [[menu.main]]
+  name = "python"
+  identifier = "python"
+  weight = 300
+  url = "/python/"

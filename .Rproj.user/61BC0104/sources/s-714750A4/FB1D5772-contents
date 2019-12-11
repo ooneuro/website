@@ -1,0 +1,201 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Homework 12"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "*Enter your name and EID here*\n",
+    "\n",
+    "**This homework is due on Dec 10, 2019 at 11:59pm. Please submit as a PDF file on Canvas. Before submission, please re-run all cells by clicking \"Kernel\" and selecting \"Restart & Run All.\"**\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Problem 1 (5 points):** In bioinformatics, k-mers refer to all the possible subsequences (of length k) from a read obtained through DNA sequencing. For example, if the DNA sequencing read is \"ATCATCATG\", then a the 3-mers in that read include \"ATC\" (which occurs twice), \"TCA\" (which occurs twice), \"CAT\" (occurs twice), and \"ATG\" (occurs once). You can read more about k-mers on [Wikipedia](https://en.wikipedia.org/wiki/K-mer).\n",
+    "\n",
+    "Write a function that takes a string of nucleotides as input and returns a **dictionary** with all 3-mers present in that string, and the number of times that each 3-mer occurs. Then use your function to find the 3-mers in the DNA sequence `my_seq1` defined below.\n",
+    "\n",
+    "The output of your function should be a dictionary that is structured like this (although it will have several more entries)\n",
+    "\n",
+    "`{\"CAG\": 2, \"AGC\": 1, \"GCC\": 3}`\n",
+    "\n",
+    "where each key is a 3-mer itself (e.g., \"ATC\") and each value is the number of times that 3-mer occurs.\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Find all 3-mers in these two sequences\n",
+    "my_seq1 = \"ATCATCATG\"\n",
+    "my_seq2 = \"CAGCCCAATCAGGCTCTACTGCCACTAAACTTACGCAGGATATATTTACGCCGACGTACT\"\n",
+    "\n",
+    "# Your code goes here"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Problem 2a (3 points):** DNA sequences are typically stored in a format called FASTA (pronounced fast-ay). A single FASTA file may contain many different sequences. For example, you may have a FASTA file for a mouse, and each mouse gene sequence is stored as a separate sequence in that FASTA file. All sequences in a FASTA file begin on a new line with a greater-than symbol \"`>`\" (without quotes). \n",
+    "\n",
+    "Write a function that takes the *name* of a FASTA file as input, opens that file, counts the number of sequences in the file (by counting the number of lines in the file that start with a “>” symbol), and returns the count. Download the file \"[ls_orchid.fasta](https://raw.githubusercontent.com/biopython/biopython/master/Doc/examples/ls_orchid.fasta)\" to your computer (should also be on Canvas and on the servers), upload it to your home directory, and use your function to count the number of sequences in the file (by determining the number of greater-than symbols. The file `ls_orchid.fasta` contains nucleotide database results for lady slipper orchids. Test your function on that! Now use the function on the file `CD4.fasta` (on Canvas and on the servers). This file contains amino acid sequences of the CD4 membrane protein that is found on the surface of the immune cells.\n",
+    "\n",
+    "How many sequences does each fasta file contain?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#The following code opens the file, reads it into contents, and closes the file\n",
+    "\n",
+    "file_handle = open(\"ls_orchid.fasta\", \"r\") # open in 'r' mode  to read the file\n",
+    "contents = file_handle.read() # reads the entire file \n",
+    "file_handle.close() # always close at the end\n",
+    "\n",
+    "# you may want to use re.findall and len() here!"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Problem 2b (2 points):** Often, you will use the biopython package to parse sequences (it makes it much easier)! Take a look at the following code and make sure the number of sequences it returns matches what your function found above (it is returning some extra stuff too). Modify it to give the same output for the CD4.fasta file and to print out the first 30 elements of each sequence."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#!pip3 install biopython # or conda install biopython #if you are not on the servers\n",
+    "\n",
+    "from Bio import SeqIO\n",
+    "\n",
+    "nseqs=0\n",
+    "for seq_record in SeqIO.parse(\"ls_orchid.fasta\", \"fasta\"):\n",
+    "    nseqs+=1\n",
+    "    print(\"sequence\",nseqs,\"is\",len(seq_record),\\\n",
+    "          \"long, and the first 5 elements are\",seq_record.seq[:5] )\n",
+    "print(\"the number of sequences is\", nseqs)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Problem 3 (5 points):** Using **Needleman-Wunsch**, align the following two sequences by hand:\n",
+    "\n",
+    "```\n",
+    "CCAGT\n",
+    "ACAAGT\n",
+    "```\n",
+    "\n",
+    "Draw out a score matrix, **with the back-tracing arrows**, using the following scoring function:\n",
+    "\n",
+    "```\n",
+    "Match: +2\n",
+    "Mismatch: -1\n",
+    "Gap: -1\n",
+    "```\n",
+    "\n",
+    "After you have filled out your score matrix, be sure to **write out the final alignment**.\n",
+    "\n",
+    "Take a picture of your handwork, upload it to the home directory on the server (or whatever directory you have this assignment in), and replacing `image_name.png` with the actual file name and extension, embed it below:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from IPython.display import Image\n",
+    "Image(filename='image_name.png')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Problem 4 (5 points):** Using the code for the Needleman-Wunsch algorithm from class, create a function that runs the **Smith-Waterman** algorithm instead. You may **not** run Needleman-Wunsch and then zero out the negatives. Instead, modify the code to prevent negative values (e.g., by using max(var,0)). Your function final should produce the matrix of scores only. You **do not** need to do back-tracing. Use the same scoring values as above. \n",
+    "\n",
+    "Change the function name to sw_fun(). Run the sequences from Problem 3 through your function as well and confirm that the positive values are the same."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "\n",
+    "# Use these values to calculate scores\n",
+    "match_score = 2\n",
+    "mismatch_score = -1\n",
+    "gap_penalty = -1\n",
+    "\n",
+    "# Make a score matrix with these two sequences\n",
+    "seq1 = \"ATGAT\"\n",
+    "seq2 = \"AAGGAT\"\n",
+    "\n",
+    "\n",
+    "def nw_function(seq1,seq2,gap_penalty=-1, match_score=1, mismatch_score=-1):\n",
+    "    m=len(seq1) #length of horizontal sequence\n",
+    "    n=len(seq2) #length of vertical sequence\n",
+    "    score=np.empty(shape=[n+1,m+1]) #array to hold scores\n",
+    "   \n",
+    "    for j in range(0, m + 1): score[0][j] = gap_penalty * j\n",
+    "    for i in range(0, n + 1): score[i][0] = gap_penalty * i\n",
+    "    \n",
+    "    for i in range(1, n + 1): \n",
+    "        for j in range(1, m + 1):\n",
+    "            insert = score[i - 1][j] + gap_penalty \n",
+    "            delete = score[i][j - 1] + gap_penalty \n",
+    "            match = score[i - 1][j - 1] + match_score if seq1[j-1]==seq2[i-1] else mismatch_score\n",
+    "            score[i][j] = max(match, delete, insert)\n",
+    "    return score\n",
+    "\n",
+    "nw_function(seq1,seq2,gap_penalty,match_score,mismatch_score)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 1
+}

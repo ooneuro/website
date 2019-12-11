@@ -12,13 +12,12 @@
     
     
     <item>
-      <title>My 1st blog post</title>
-      <link>/blog/my-1st-blog-post/</link>
+      <title>Cheapskaters&#39; Adventures in Alaska 2019 (in Russian)</title>
+      <link>/blog/alaska2019/</link>
       <pubDate>Fri, 06 Dec 2019 00:00:00 +0000</pubDate>
       
-      <guid>/blog/my-1st-blog-post/</guid>
-      <description>Here’s my first blog post!Some text
-plot(faithful$eruptions, faithful$waiting)</description>
+      <guid>/blog/alaska2019/</guid>
+      <description>Cheapskaters’ Adventures in AlaskaDay 1-2 - June 23-24, 2019Photo Day 1-2 Летели AUS - SEA - ANC, рейс из Сиэттла, кстати, считается международным. Задержали на час, нажрались в alaska lounge как скоты, он там хороший и просторный. Много было азиатов, т.к. соседний гейт летел в Пекин. Прибыли в Анкорейж около 15 ч, на Убере доехали до Avis и взяли машину (это на 10-20% дешевле, чем из аэропорта, $1008 за 11 дней).</description>
     </item>
     
   </channel>

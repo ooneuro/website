@@ -1,14 +1,16 @@
 ---
 title: "Resume"
 author: "Olga Ostrovskaya"
-date: "12/6/2019"
+date: "2019-12-6"
 output: html_document
+showpagemeta: false
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## My Resume/CV - pick your flavor!
+## Python exercises 
+December 2019
 
-[Academic CV](/CV-OlgaOstrovskaya_2019.pdf)
+[SDS 438 Fall2019 - Homework](/CV-OlgaOstrovskaya_2019.pdf)

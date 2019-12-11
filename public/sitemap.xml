@@ -3,59 +3,66 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/</loc>
+    <lastmod>2019-12-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/project1_oo3662_full/</loc>
+    <lastmod>2019-12-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/project2_oo3662_full/</loc>
+    <lastmod>2019-12-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/python/</loc>
+    <lastmod>2019-12-09T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/blog/</loc>
     <lastmod>2019-12-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/blog/my-1st-blog-post/</loc>
+    <loc>/blog/alaska2019/</loc>
     <lastmod>2019-12-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/</loc>
-    <lastmod>2019-12-06T00:00:00+00:00</lastmod>
+    <loc>/hw11_oo3662/</loc>
+    <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2016-10-02T22:55:05-04:00</lastmod>
   </url>
   
   <url>
     <loc>/projects/</loc>
-    <lastmod>2016-10-02T22:55:05-04:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/projects/</loc>
-    <lastmod>2016-10-02T22:55:05-04:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/projects/</loc>
-    <lastmod>2016-10-02T22:55:05-04:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/</loc>
-    <lastmod>2016-10-02T22:55:05-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/project1_oo3662_full/</loc>
-  </url>
-  
-  <url>
-    <loc>/project2_oo3662_full/</loc>
-  </url>
-  
-  <url>
-    <loc>/projects/</loc>
+    <loc>/python/</loc>
   </url>
   
   <url>
     <loc>/resume/</loc>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
   </url>
   
 </urlset>
