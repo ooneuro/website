@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Olga Ostrovskaya" />
+    <meta name="description" content="I&#39;m a neuroscientist with a love to statistics and data science!">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>HW 10</title>
+    <meta name="generator" content="Hugo 0.60.1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/python/">PYTHON</a></li>
+        
+        <li><a href="/resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/hw10_oo3662.utf8/">HW 10</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              <h2 id="olga-ostrovskaya-oo3662">Olga Ostrovskaya, oo3662</h2>
+<p><strong>This homework is due on Nov 26, 2019 at 11:59pm. Please submit as a pdf file on Canvas.</strong></p>
+<p><em>For all questions, include the python commands/functions that you used to find your answer. Answers without supporting code will not receive credit.</em></p>
+<blockquote>
+<h3 id="how-to-submit-this-assignment">How to submit this assignment</h3>
+<p>All homework assignments will be completed using R Markdown. These <code>.Rmd</code> files consist of &gt;text/syntax (formatted using Markdown) alongside embedded R code. 
+When you have completed the assignment (by adding R code inside codeblocks and supporting text outside of the codeblocks), create your document as follows:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>Click the &ldquo;Knit&rdquo; button (above) to create an .html file</li>
+<li>Open the html file in your internet browser to view</li>
+<li>Go to <code>File &gt; Print</code> and print your .html file to a .pdf</li>
+<li>Upload the .pdf file to Canvas</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="warning-due-to-an-old-version-of-rstudio-server-python-and-r-code-chunks-do-not-interact-on-the-educcomp-servers-however-it-should-still-knit-correctly-ie-you-should-still-be-able-to-use-robjfromr-and-pyobjfrompython-you-could-just-knit-it-every-time-you-answer-a-question-but-it-would-be-a-very-good-idea-to-do-this-assignment-on-your-own-rstudio-updating-rstudio-only-takes-a-second-and-doesnt-delete-any-packages-etc-just-go-to-httpsrstudiocomproductsrstudiodownloaddownload-and-downloadrunrestart-and-you-should-be-all-set-regardless-i-have-added-alternative-ways-to-complete-the-assignment-eg-by-reading-in-the-data-from-online-or-from-a-csv-still-i-do-encourage-you-to-play-with-reticulate-the-remaining-homeworks-will-be-done-using-jupyter-notebooks">WARNING: DUE TO AN OLD VERSION OF RSTUDIO SERVER, PYTHON AND R CODE CHUNKS DO NOT INTERACT ON THE EDUCCOMP SERVERS. HOWEVER, IT SHOULD STILL KNIT CORRECTLY (i.e., YOU SHOULD STILL BE ABLE TO USE <code>r.obj_from_r</code> and <code>py$obj_from_python</code>). YOU COULD JUST KNIT IT EVERY TIME YOU ANSWER A QUESTION, BUT IT WOULD BE A VERY GOOD IDEA TO DO THIS ASSIGNMENT ON YOUR OWN RSTUDIO. UPDATING RSTUDIO ONLY TAKES A SECOND AND DOESN'T DELETE ANY PACKAGES, ETC. JUST GO TO <a href="https://rstudio.com/products/rstudio/download/#download">https://rstudio.com/products/rstudio/download/#download</a> AND DOWNLOAD/RUN/RESTART AND YOU SHOULD BE ALL SET. REGARDLESS, I HAVE ADDED ALTERNATIVE WAYS TO COMPLETE THE ASSIGNMENT (e.g., BY READING IN THE DATA FROM ONLINE OR FROM A CSV): STILL, I DO ENCOURAGE YOU TO PLAY WITH RETICULATE! THE REMAINING HOMEWORKS WILL BE DONE USING JUPYTER NOTEBOOKS.</h2>
+<h3 id="question-1-2-pts">Question 1: (2 pts)</h3>
+<h5 id="the-dataset-faithful-contains-information-about-eruptions-of-the-old-faithful-geyser-in-yellowstone-national-park-the-first-few-observations-are-listed-below">The dataset <code>faithful</code> contains information about eruptions of the Old Faithful geyser in Yellowstone National Park. The first few observations are listed below.</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">library</span>(reticulate)
+<span style="color:#a6e22e">use_python</span>(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">C:/Users/olgao/Anaconda3/python.exe&#34;</span>)
+
+faithful<span style="color:#f92672">&lt;-</span>faithful
+<span style="color:#a6e22e">head</span>(faithful)
+</code></pre></div><pre><code>##   eruptions waiting
+## 1     3.600      79
+## 2     1.800      54
+## 3     3.333      74
+## 4     2.283      62
+## 5     4.533      85
+## 6     2.883      55
+</code></pre><h5 id="bring-the-dataset-faithful-over-from-r-and-look-at-it-in-python-the-rest-of-this-assignment-must-be-completed-in-python-unless-otherwise-noted-what-type-of-object-is-it-what-are-the-minimum-and-maximum-values-of-the-variables-eruptions-and-waiting-put-a-dot-after-the-object-and-hit-tab-look-at-all-those-functions">Bring the dataset <code>faithful</code> over from R and look at it in Python. THE REST OF THIS ASSIGNMENT MUST BE COMPLETED IN PYTHON UNLESS OTHERWISE NOTED! What type of object is it? What are the minimum and maximum values of the variables eruptions and waiting? Put a dot after the object and hit tab: Look at all those functions!</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+<span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+<span style="color:#f92672">import</span> seaborn <span style="color:#f92672">as</span> sns
+<span style="color:#f92672">import</span> os
+os<span style="color:#f92672">.</span>environ[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">QT_QPA_PLATFORM_PLUGIN_PATH</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">C:/Users/olgao/Anaconda3/Library/plugins/platforms</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#75715e">### 1.</span>
+
+faithful<span style="color:#f92672">=</span>r<span style="color:#f92672">.</span>faithful 
+<span style="color:#75715e">#again, this may not work by running the chunk on the servers, but it should still knit.</span>
+<span style="color:#75715e">#to read this into python directly, sidestepping the issue, just uncomment and run the following two lines</span>
+
+<span style="color:#75715e">#faithful=pd.read_csv(&#34;https://vincentarelbundock.github.io/Rdatasets/csv/datasets/faithful.csv&#34;)</span>
+
+<span style="color:#75715e">#faithful</span>
+min(faithful<span style="color:#f92672">.</span>eruptions); min(faithful<span style="color:#f92672">.</span>waiting)
+</code></pre></div><pre><code>## 1.6
+## 43.0
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">max(faithful<span style="color:#f92672">.</span>eruptions); max(faithful<span style="color:#f92672">.</span>waiting)
+</code></pre></div><pre><code>## 5.1
+## 96.0
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">faithful<span style="color:#f92672">.</span>describe()
+</code></pre></div><pre><code>##         eruptions     waiting
+## count  272.000000  272.000000
+## mean     3.487783   70.897059
+## std      1.141371   13.594974
+## min      1.600000   43.000000
+## 25%      2.162750   58.000000
+## 50%      4.000000   76.000000
+## 75%      4.454250   82.000000
+## max      5.100000   96.000000
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">type(faithful)
+</code></pre></div><pre><code>## &lt;class 'pandas.core.frame.DataFrame'&gt;
+</code></pre><p><em>The min values for eruptions and waiting: 1.6min and 43min; max: 5.1 and 96 mins. Faithful is a Data Frame.</em></p>
+<hr>
+<h3 id="question-2-4-pts">Question 2: (4 pts)</h3>
+<h5 id="now-import-numpy-and-use-functions-from-it-to-compute-the-mean-median-and-variance-for-each-variable-finally-compute-the-correlation-between-the-two-variables-using-corrcoef-it-will-return-a-matrix-you-can-access-individual-variables-in-a-dataframe-using-the--operator-eg-faithfuleruptions">Now, import <code>numpy</code> and use functions from it to compute the mean, median, and variance for each variable. Finally, compute the correlation between the two variables using corrcoef (it will return a matrix). You can access individual variables in a dataframe using the <code>.</code> operator (e.g., <code>faithful.eruptions</code>).</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">### 2.</span>
+<span style="color:#75715e"># the easier way is described in Q1 already.</span>
+np<span style="color:#f92672">.</span>mean(faithful<span style="color:#f92672">.</span>eruptions)
+</code></pre></div><pre><code>## 3.4877830882352936
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">np<span style="color:#f92672">.</span>var(faithful<span style="color:#f92672">.</span>eruptions)
+</code></pre></div><pre><code>## 1.2979388904492855
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">np<span style="color:#f92672">.</span>median(faithful<span style="color:#f92672">.</span>eruptions)
+</code></pre></div><pre><code>## 4.0
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">np<span style="color:#f92672">.</span>mean(faithful<span style="color:#f92672">.</span>waiting)
+</code></pre></div><pre><code>## 70.8970588235294
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">np<span style="color:#f92672">.</span>var(faithful<span style="color:#f92672">.</span>waiting)
+</code></pre></div><pre><code>## 184.14381487889264
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">np<span style="color:#f92672">.</span>median(faithful<span style="color:#f92672">.</span>waiting)
+</code></pre></div><pre><code>## 76.0
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">np<span style="color:#f92672">.</span>corrcoef(faithful, rowvar <span style="color:#f92672">=</span> False)
+
+</code></pre></div><pre><code>## array([[1.        , 0.90081117],
+##        [0.90081117, 1.        ]])
+</code></pre><p><em>The mean and variance for eruptions is 3.488 min and 1.298 min. For waiting - 70.9 and 184.1 min. The correlation between eruptions and waiting is very good: 0.901.</em></p>
+<hr>
+<h3 id="question-3-6-pts">Question 3: (6 pts)</h3>
+<h5 id="recall-how-logical-indexing-of-a-dataframe-works-in-python-to-refresh-your-memory-in-the-example-code-below-i-ask-python-for-the-number-of-rows-in-the-dataset-where-the-variable-waiting-takes-on-values-greater-than-60-then-i-ask-for-the-average-of-the-variable-eruptions-when-the-variable-waiting-is-above-60">Recall how logical indexing of a dataframe works in python. To refresh your memory, in the example code below I ask python for the number of rows in the dataset where the variable <code>waiting</code> takes on values greater than 60. Then I ask for the average of the variable <code>eruptions</code> when the variable <code>waiting</code> is above 60.</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">faithful[faithful<span style="color:#f92672">.</span>waiting<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">60</span>]<span style="color:#f92672">.</span>shape
+</code></pre></div><pre><code>## (189, 2)
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">faithful[faithful<span style="color:#f92672">.</span>waiting<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">60</span>]<span style="color:#f92672">.</span>eruptions<span style="color:#f92672">.</span>mean()
+<span style="color:#75715e"># or np.mean(faithful[faithful.waiting&gt;60].eruptions)</span>
+</code></pre></div><pre><code>## 4.138587301587303
+</code></pre><h5 id="32-1-pt-what-is-the-standard-deviation-of-the-variable-eruptions">3.2 (1 pt) What is the standard deviation of the variable <code>eruptions</code>?</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">### Q3.2.</span>
+faithful<span style="color:#f92672">.</span>eruptions<span style="color:#f92672">.</span>std()
+</code></pre></div><pre><code>## 1.1413712511052077
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">np<span style="color:#f92672">.</span>std(faithful<span style="color:#f92672">.</span>eruptions)
+</code></pre></div><pre><code>## 1.1392712102257678
+</code></pre><p><em>Q: Why 2 numbers are different?</em>
+<em>The SD for the &lsquo;eruptions&rsquo; is 1.14 min.</em></p>
+<h5 id="33-2-pts-what-is-the-standard-deviation-of-the-variable-eruptions-when-waiting-is-less-than-the-median">3.3 (2 pts) What is the standard deviation of the variable <code>eruptions</code> when <code>waiting</code> is <em>less than</em> the median?</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Q - I thought it&#39;s python, not R. Is it ok?</span>
+
+<span style="color:#75715e">### 3.3.</span>
+<span style="color:#f92672">from</span> statistics <span style="color:#f92672">import</span> median 
+
+<span style="color:#75715e">#np.median(faithful.waiting)</span>
+faithful[faithful<span style="color:#f92672">.</span>waiting<span style="color:#f92672">&lt;</span>median(faithful<span style="color:#f92672">.</span>waiting)]<span style="color:#f92672">.</span>eruptions<span style="color:#f92672">.</span>std()
+</code></pre></div><pre><code>## 0.9583443399236853
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">np<span style="color:#f92672">.</span>std(faithful[faithful<span style="color:#f92672">.</span>waiting<span style="color:#f92672">&lt;</span>np<span style="color:#f92672">.</span>median(faithful<span style="color:#f92672">.</span>waiting)]<span style="color:#f92672">.</span>eruptions)
+</code></pre></div><pre><code>## 0.9547617317201806
+</code></pre><p><em>Depending on the package, the SD of this subset is 0.95 or 0.96 min.</em></p>
+<h5 id="34-2-pts-what-is-the-standard-deviation-of-the-variable-eruptions-when-waiting-is-greater-than-the-median">3.4 (2 pts) What is the standard deviation of the variable <code>eruptions</code> when <code>waiting</code> is <em>greater than</em> the median?</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e">### 3.4</span>
+<span style="color:#a6e22e">library</span>(dplyr)
+</code></pre></div><pre><code>## 
+## Attaching package: 'dplyr'
+</code></pre><pre><code>## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+</code></pre><pre><code>## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">faithful <span style="color:#f92672">%&gt;%</span> <span style="color:#a6e22e">filter</span>(waiting <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">median</span>(waiting)) <span style="color:#f92672">%&gt;%</span> <span style="color:#a6e22e">summarize</span>(m1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">mean</span>(eruptions), sd1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">sd</span>(eruptions))
+</code></pre></div><pre><code>##         m1       sd1
+## 1 4.358364 0.3730518
+</code></pre><p><em>SD of eruptions in this subset is 0.373 min.</em></p>
+<hr>
+<h3 id="question-4-4-pts">Question 4: (4 pts)</h3>
+<h5 id="both-variables-are-measured-in-minutes-create-two-new-variables-named-eruptionsh-and-waitingh-that-give-each-variable-in-hours-rather-than-minutes-and-add-them-to-the-dataset-faithful-to-help-get-you-started-i-have-given-you-code-that-creates-a-new-variable-called-eruptionsminusone-instead-computes-the-requested-transformation-print-out-the-first-few-rows-of-the-updated-dataset-using-head">Both variables are measured in minutes. Create two new variables named <code>eruptions_h</code> and <code>waiting_h</code> that give each variable <strong>in hours rather than minutes</strong> and add them to the dataset <code>faithful</code>. To help get you started, I have given you code that creates a new variable called eruptions_minus_one. Instead, computes the requested transformation. Print out the first few rows of the updated dataset using <code>head()</code>.</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">### 4.</span>
+
+<span style="color:#75715e"># update the code below</span>
+<span style="color:#75715e">#faithful[&#39;eruptions_minus_one&#39;]=(faithful[&#39;eruptions&#39;]-1)</span>
+<span style="color:#75715e">#faithful</span>
+<span style="color:#75715e">#del faithful[&#39;eruptions_minus_one&#39;]</span>
+
+faithful[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eruptions_h</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">=</span>(faithful[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eruptions</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">/</span><span style="color:#ae81ff">60</span>)
+faithful[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">waiting_h</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">=</span>(faithful[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">waiting</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">/</span><span style="color:#ae81ff">60</span>)
+faithful<span style="color:#f92672">.</span>head()
+
+</code></pre></div><pre><code>##    eruptions  waiting  eruptions_h  waiting_h
+## 0      3.600     79.0      0.06000   1.316667
+## 1      1.800     54.0      0.03000   0.900000
+## 2      3.333     74.0      0.05555   1.233333
+## 3      2.283     62.0      0.03805   1.033333
+## 4      4.533     85.0      0.07555   1.416667
+</code></pre><h3 id="question-5-4-pts">Question 5: (4 pts)</h3>
+<h5 id="lets-make-some-plots-in-python">Let's make some plots in python!</h5>
+<h5 id="51-1-pt-create-a-boxplot-of-each-original-variable-eruptions-and-waiting-using-the-boxplot-function-from-matplotlib">5.1 (1 pt) Create a boxplot of each original variable (eruptions and waiting) using the <code>boxplot()</code> function from matplotlib</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">### 5.</span>
+
+<span style="color:#75715e">#plt.boxplot(faithful[&#39;eruptions&#39;])</span>
+<span style="color:#75715e">#plt.boxplot(faithful[&#39;waiting&#39;])</span>
+plt<span style="color:#f92672">.</span>boxplot([faithful[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eruptions</span><span style="color:#e6db74">&#39;</span>], faithful[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">waiting</span><span style="color:#e6db74">&#39;</span>]])
+</code></pre></div><pre><code>## {'whiskers': [&lt;matplotlib.lines.Line2D object at 0x000000003A774EF0&gt;, &lt;matplotlib.lines.Line2D object at 0x000000003A774FD0&gt;, &lt;matplotlib.lines.Line2D object at 0x000000003A7996D8&gt;, &lt;matplotlib.lines.Line2D object at 0x000000003A799A20&gt;], 'caps': [&lt;matplotlib.lines.Line2D object at 0x000000003A78E5C0&gt;, &lt;matplotlib.lines.Line2D object at 0x000000003A78E908&gt;, &lt;matplotlib.lines.Line2D object at 0x000000003A799D68&gt;, &lt;matplotlib.lines.Line2D object at 0x000000003A799E48&gt;], 'boxes': [&lt;matplotlib.lines.Line2D object at 0x000000003A774AC8&gt;, &lt;matplotlib.lines.Line2D object at 0x000000003A78EF28&gt;], 'medians': [&lt;matplotlib.lines.Line2D object at 0x000000003A78EC50&gt;, &lt;matplotlib.lines.Line2D object at 0x000000003A7A7438&gt;], 'fliers': [&lt;matplotlib.lines.Line2D object at 0x000000003A78EF98&gt;, &lt;matplotlib.lines.Line2D object at 0x000000003A7A7780&gt;], 'means': []}
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plt<span style="color:#f92672">.</span>show()
+<span style="color:#75715e">#replace df, variable with your stuff</span>
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<h5 id="52-1-pt-create-a-histogram-of-each-original-variable-using-the-hist-function">5.2 (1 pt) Create a histogram of each original variable using the <code>hist()</code> function.</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">### 5.2.</span>
+
+plt<span style="color:#f92672">.</span>hist(faithful[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eruptions</span><span style="color:#e6db74">&#39;</span>])
+</code></pre></div><pre><code>## (array([45., 36., 13.,  3.,  4., 12., 29., 52., 54., 24.]), array([1.6 , 1.95, 2.3 , 2.65, 3.  , 3.35, 3.7 , 4.05, 4.4 , 4.75, 5.1 ]), &lt;a list of 10 Patch objects&gt;)
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plt<span style="color:#f92672">.</span>hist(faithful[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">waiting</span><span style="color:#e6db74">&#39;</span>])
+</code></pre></div><pre><code>## (array([16., 28., 26., 24.,  9., 23., 62., 55., 23.,  6.]), array([43. , 48.3, 53.6, 58.9, 64.2, 69.5, 74.8, 80.1, 85.4, 90.7, 96. ]), &lt;a list of 10 Patch objects&gt;)
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plt<span style="color:#f92672">.</span>show()
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<h5 id="53-1-pt-create-a-scatterplot-by-plotting-both-variables-against-each-other-using-the-plot-function-note-that-plot-takes-two-arguments-the-xaxis-variable-and-the-yaxis-variable">5.3 (1 pt) Create a scatterplot by plotting both variables against each other using the <code>plot()</code> function. Note that plot takes two arguments: the x-axis variable and the y-axis variable.</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">### 5.3.</span>
+plt<span style="color:#f92672">.</span>scatter(faithful[<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">eruptions</span><span style="color:#e6db74">&#34;</span>],faithful[<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">waiting</span><span style="color:#e6db74">&#34;</span>])
+plt<span style="color:#f92672">.</span>show()
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<h5 id="61-1-pt-load-the-tips-dataset-from-seaborn-a-plotting-package-we-will-use-later-have-a-look-at-it-below-what-type-of-object-is-it">6.1 (1 pt) Load the tips dataset from <code>seaborn</code> (a plotting package we will use later). Have a look at it below. What type of object is it?</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#import pandas as pd</span>
+<span style="color:#75715e">#pd.read_csv(&#34;http://www.justFYIyouCanReadDataFromURLs.com/myfile.csv&#34;)</span>
+
+tips <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>load_dataset(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">tips</span><span style="color:#e6db74">&#39;</span>)
+iris <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>load_dataset(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">iris</span><span style="color:#e6db74">&#39;</span>) <span style="color:#75715e">#yep, that iris</span>
+type(tips)
+</code></pre></div><pre><code>## &lt;class 'pandas.core.frame.DataFrame'&gt;
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">tips<span style="color:#f92672">.</span>head()
+</code></pre></div><pre><code>##    total_bill   tip     sex smoker  day    time  size
+## 0       16.99  1.01  Female     No  Sun  Dinner     2
+## 1       10.34  1.66    Male     No  Sun  Dinner     3
+## 2       21.01  3.50    Male     No  Sun  Dinner     3
+## 3       23.68  3.31    Male     No  Sun  Dinner     2
+## 4       24.59  3.61  Female     No  Sun  Dinner     4
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">tips<span style="color:#f92672">.</span>describe()
+
+<span style="color:#75715e">#using pandas groupby functionality</span>
+</code></pre></div><pre><code>##        total_bill         tip        size
+## count  244.000000  244.000000  244.000000
+## mean    19.785943    2.998279    2.569672
+## std      8.902412    1.383638    0.951100
+## min      3.070000    1.000000    1.000000
+## 25%     13.347500    2.000000    2.000000
+## 50%     17.795000    2.900000    2.000000
+## 75%     24.127500    3.562500    3.000000
+## max     50.810000   10.000000    6.000000
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">groups <span style="color:#f92672">=</span> tips<span style="color:#f92672">.</span>groupby(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sex</span><span style="color:#e6db74">&#39;</span>)
+groups[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">tip</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">.</span>mean()
+
+<span style="color:#75715e">#tips.to_csv(&#34;tips.csv&#34;) #create tips.csv file in case reticulate isn&#39;t working so you can read it into R</span>
+</code></pre></div><pre><code>## sex
+## Male      3.089618
+## Female    2.833448
+## Name: tip, dtype: float64
+</code></pre><p><em>Tips is a data frame. The dropped vars are categorical - sex, smoker, date, time.</em></p>
+<h5 id="62-1-pt-access-tips-using-pydf-in-r-and-make-a-plot-with-ggplot-illustrating-the-relationship-between-totalbill-tip-time-and-sex-find-an-effective-way-to-include-all-four-variables-in-the-same-plot">6.2 (1 pt) Access tips using <code>py$df</code> in R and make a plot with ggplot illustrating the relationship between total_bill, tip, time, and sex (find an effective way to include all four variables in the same plot)!</h5>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">library</span>(tidyverse)
+</code></pre></div><pre><code>## -- Attaching packages ----------------------------------------------------- tidyverse 1.2.1 --
+</code></pre><pre><code>## v ggplot2 3.2.1     v readr   1.3.1
+## v tibble  2.1.1     v purrr   0.3.2
+## v tidyr   1.0.0     v stringr 1.4.0
+## v ggplot2 3.2.1     v forcats 0.4.0
+</code></pre><pre><code>## -- Conflicts -------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e">#tips&lt;-read.csv(&#34;tips.csv&#34;)</span>
+
+tips<span style="color:#f92672">&lt;-</span> py<span style="color:#f92672">$</span>tips
+<span style="color:#75715e">#View(tips)</span>
+tips <span style="color:#f92672">%&gt;%</span> <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(total_bill, tip, color <span style="color:#f92672">=</span> sex))<span style="color:#f92672">+</span>
+  <span style="color:#a6e22e">geom_point</span>(size <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>)<span style="color:#f92672">+</span>
+  <span style="color:#a6e22e">facet_wrap</span>(<span style="color:#f92672">~</span>time)
+</code></pre></div><p><!-- raw HTML omitted --></p>
+<pre><code>## R version 3.5.3 (2019-03-11)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 18362)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=English_United States.1252 
+## [2] LC_CTYPE=English_United States.1252   
+## [3] LC_MONETARY=English_United States.1252
+## [4] LC_NUMERIC=C                          
+## [5] LC_TIME=English_United States.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] forcats_0.4.0   stringr_1.4.0   purrr_0.3.2     readr_1.3.1    
+##  [5] tidyr_1.0.0     tibble_2.1.1    ggplot2_3.2.1   tidyverse_1.2.1
+##  [9] dplyr_0.8.3     reticulate_1.13 knitr_1.26     
+## 
+## loaded via a namespace (and not attached):
+##  [1] tidyselect_0.2.5 xfun_0.11        haven_2.1.0      lattice_0.20-38 
+##  [5] colorspace_1.4-1 vctrs_0.2.0      generics_0.0.2   htmltools_0.3.6 
+##  [9] yaml_2.2.0       rlang_0.4.0      pillar_1.3.1     withr_2.1.2     
+## [13] glue_1.3.1       modelr_0.1.5     readxl_1.3.1     lifecycle_0.1.0 
+## [17] munsell_0.5.0    gtable_0.3.0     cellranger_1.1.0 rvest_0.3.4     
+## [21] evaluate_0.14    labeling_0.3     broom_0.5.2      Rcpp_1.0.1      
+## [25] backports_1.1.4  scales_1.0.0     jsonlite_1.6     hms_0.4.2       
+## [29] png_0.1-7        digest_0.6.18    stringi_1.4.3    grid_3.5.3      
+## [33] cli_1.1.0        tools_3.5.3      magrittr_1.5     lazyeval_0.2.2  
+## [37] crayon_1.3.4     pkgconfig_2.0.2  zeallot_0.1.0    Matrix_1.2-15   
+## [41] xml2_1.2.2       lubridate_1.7.4  assertthat_0.2.1 rmarkdown_1.18  
+## [45] httr_1.4.1       rstudioapi_0.10  R6_2.4.0         nlme_3.1-137    
+## [49] compiler_3.5.3
+</code></pre><pre><code>## [1] &quot;2019-12-11 23:17:51 CST&quot;
+</code></pre><pre><code>##        sysname        release        version       nodename        machine 
+##      &quot;Windows&quot;       &quot;10 x64&quot;  &quot;build 18362&quot;      &quot;OLECHKA&quot;       &quot;x86-64&quot; 
+##          login           user effective_user 
+##        &quot;olgao&quot;        &quot;olgao&quot;        &quot;olgao&quot;
+</code></pre>
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

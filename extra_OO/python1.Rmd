@@ -9,6 +9,7 @@ showpagemeta: false
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(reticulate)
+use_python("C:/Users/olgao/Anaconda3/python.exe")
 ```
 
 #[SDS 348 Homework 10](/HW10_oo3662.pdf)
@@ -24,6 +25,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
+import os
+os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = 'C:/Users/olgao/Anaconda3/Library/plugins/platforms'
+
 
 faithful=r.faithful 
 faithful.describe()
